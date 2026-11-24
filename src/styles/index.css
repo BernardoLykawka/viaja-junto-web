@@ -1,0 +1,5 @@
+@import 'tailwindcss';
+/* Tokens gerados do DESIGN.md (frontend/design). Nunca edite os arquivos de tokens à mão. */
+@import '../../design/tokens/tokens.css';
+@import '../../design/tokens/tokens.root.css';
+@import './components.css';

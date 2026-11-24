@@ -1,0 +1,19 @@
+{
+  "name": "viaja-junto-design",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Design system do ViajaJunto (DESIGN.md), regras para agentes de IA e protótipo HTML da interface.",
+  "type": "module",
+  "scripts": {
+    "design:lint": "designmd lint DESIGN.md",
+    "design:tokens": "node scripts/build-tokens.mjs",
+    "design:check": "npm run design:lint && npm run design:tokens"
+  },
+  "devDependencies": {
+    "@google/design.md": "0.4.0",
+    "yaml": "^2.9.1"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

@@ -1,0 +1,815 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ViajaJunto · Protótipo</title>
+<!-- Tokens gerados do DESIGN.md (npm run design:tokens). Não escreva cores ou medidas fora deles. -->
+<link rel="stylesheet" href="../tokens/tokens.root.css">
+<link rel="stylesheet" href="assets/fonts.css">
+<link rel="stylesheet" href="assets/phosphor/regular/style.css">
+<link rel="stylesheet" href="assets/phosphor/fill/style.css">
+<style>
+/* ---------- Tipografia: uma classe por token de typography ---------- */
+.type-display     { font-family: var(--font-display), sans-serif; font-size: var(--text-display); font-weight: var(--font-weight-display); line-height: var(--text-display--line-height); letter-spacing: var(--tracking-display); }
+.type-headline-lg { font-family: var(--font-headline-lg), sans-serif; font-size: var(--text-headline-lg); font-weight: var(--font-weight-headline-lg); line-height: var(--text-headline-lg--line-height); letter-spacing: var(--tracking-headline-lg); }
+.type-headline-md { font-family: var(--font-headline-md), sans-serif; font-size: var(--text-headline-md); font-weight: var(--font-weight-headline-md); line-height: var(--text-headline-md--line-height); }
+.type-headline-sm { font-family: var(--font-headline-sm), sans-serif; font-size: var(--text-headline-sm); font-weight: var(--font-weight-headline-sm); line-height: var(--text-headline-sm--line-height); }
+.type-title-md    { font-family: var(--font-title-md), sans-serif; font-size: var(--text-title-md); font-weight: var(--font-weight-title-md); line-height: var(--text-title-md--line-height); }
+.type-body-lg     { font-family: var(--font-body-lg), sans-serif; font-size: var(--text-body-lg); font-weight: var(--font-weight-body-lg); line-height: var(--text-body-lg--line-height); }
+.type-body-md     { font-family: var(--font-body-md), sans-serif; font-size: var(--text-body-md); font-weight: var(--font-weight-body-md); line-height: var(--text-body-md--line-height); }
+.type-body-sm     { font-family: var(--font-body-sm), sans-serif; font-size: var(--text-body-sm); font-weight: var(--font-weight-body-sm); line-height: var(--text-body-sm--line-height); }
+.type-label-lg    { font-family: var(--font-label-lg), sans-serif; font-size: var(--text-label-lg); font-weight: var(--font-weight-label-lg); line-height: var(--text-label-lg--line-height); }
+.type-label-md    { font-family: var(--font-label-md), sans-serif; font-size: var(--text-label-md); font-weight: var(--font-weight-label-md); line-height: var(--text-label-md--line-height); }
+.type-label-sm    { font-family: var(--font-label-sm), sans-serif; font-size: var(--text-label-sm); font-weight: var(--font-weight-label-sm); line-height: var(--text-label-sm--line-height); letter-spacing: var(--tracking-label-sm); text-transform: uppercase; }
+.type-numeric-lg  { font-family: var(--font-numeric-lg), sans-serif; font-size: var(--text-numeric-lg); font-weight: var(--font-weight-numeric-lg); line-height: var(--text-numeric-lg--line-height); font-feature-settings: var(--font-feature-numeric-lg); }
+.type-numeric-md  { font-family: var(--font-numeric-md), sans-serif; font-size: var(--text-numeric-md); font-weight: var(--font-weight-numeric-md); line-height: var(--text-numeric-md--line-height); font-feature-settings: var(--font-feature-numeric-md); }
+
+/* ---------- Base ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--color-background); color: var(--color-on-surface); }
+h1, h2, h3, h4, p, ul, ol { margin: 0; }
+ul, ol { padding: 0; list-style: none; }
+a { color: var(--color-primary-strong); }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--color-primary); outline-offset: 2px; border-radius: var(--radius-xs); }
+.muted { color: var(--color-on-surface-variant); }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.ph, .ph-fill { font-size: 20px; line-height: 1; vertical-align: middle; }
+.icon-accent { color: var(--color-primary); font-size: 24px; }
+.container { width: 100%; max-width: calc(var(--spacing-container-max) + 2 * var(--spacing-margin-desktop)); margin: 0 auto; padding: 0 var(--spacing-margin-desktop); }
+
+/* ---------- app-bar / nav (clara, como na referência) ---------- */
+.app-bar { background: var(--color-surface); color: var(--color-on-surface); height: 72px; position: sticky; top: 0; z-index: 20; }
+.app-bar .container { height: 100%; display: flex; align-items: center; gap: var(--spacing-xl); }
+.brand { display: flex; align-items: center; gap: var(--spacing-sm-plus); color: var(--color-tertiary); text-decoration: none; }
+.brand-mark { width: 40px; height: 40px; border-radius: var(--radius-full); background: var(--color-success-container); display: grid; place-items: center; }
+.brand-mark .ph-fill { font-size: 24px; color: var(--color-primary-strong); }
+.brand-tagline { display: block; color: var(--color-on-surface-variant); margin-top: -2px; }
+.top-nav { display: flex; gap: var(--spacing-xl); margin-left: var(--spacing-4xl); }
+.nav-item { position: relative; display: inline-flex; align-items: center; color: var(--color-on-surface-variant); text-decoration: none; padding: var(--spacing-sm) 0; }
+.nav-item:hover { color: var(--color-primary-strong); }
+.nav-item[aria-current="page"] { color: var(--color-primary-strong); }
+.nav-item[aria-current="page"]::after { content: ""; position: absolute; left: 50%; bottom: -6px; width: 6px; height: 6px; margin-left: -3px; border-radius: var(--radius-full); background: var(--color-primary); }
+.bar-actions { display: flex; align-items: center; gap: var(--spacing-sm-plus); margin-left: auto; }
+.icon-button { position: relative; display: inline-grid; place-items: center; width: 44px; height: 44px; border: 0; background: transparent; border-radius: var(--radius-full); cursor: pointer; color: inherit; }
+.icon-button:hover { background: var(--color-success-container); }
+.icon-button .ph { font-size: 24px; }
+.button-circle { background: var(--color-surface); color: var(--color-primary-strong); box-shadow: var(--shadow-lg); width: 48px; height: 48px; }
+.button-circle:hover { background: var(--color-surface); color: var(--color-tertiary); }
+.dot { position: absolute; top: 6px; right: 6px; min-width: 18px; height: 18px; padding: 0 var(--spacing-xs); border-radius: var(--radius-full); background: var(--color-warning-container); color: var(--color-on-surface); border: 2px solid var(--color-surface); display: grid; place-items: center; font: 600 11px/1 var(--font-label-sm), sans-serif; }
+.bottom-nav { display: none; }
+
+/* ---------- Avatares ---------- */
+.avatar { width: 40px; height: 40px; border-radius: var(--radius-full); background: var(--color-secondary); color: var(--color-on-secondary); display: inline-grid; place-items: center; flex: none; }
+.avatar.sm { width: 32px; height: 32px; font-size: 12px; }
+.avatar-stack { display: flex; }
+.avatar-stack .avatar { border: 2px solid var(--color-surface); margin-left: calc(-1 * var(--spacing-xs)); }
+.avatar-stack .avatar:first-child { margin-left: 0; }
+
+/* ---------- Botões ---------- */
+.button { display: inline-flex; align-items: center; justify-content: center; gap: var(--spacing-sm); height: 48px; padding: 0 var(--spacing-lg); border-radius: var(--radius-md); border: 1px solid transparent; cursor: pointer; text-decoration: none; white-space: nowrap; }
+.button-primary { background: var(--color-primary-strong); color: var(--color-on-primary); }
+.button-primary:hover { background: var(--color-tertiary); color: var(--color-on-tertiary); }
+.button-secondary { background: var(--color-surface); color: var(--color-primary-strong); border-color: var(--color-primary-strong); }
+.button-secondary:hover { background: var(--color-success-container); }
+.button-compact { height: 36px; padding: 0 var(--spacing-sm-plus); border-radius: var(--radius-sm); background: var(--color-neutral); color: var(--color-on-surface); }
+.button-compact:hover { background: var(--color-secondary); }
+.button-danger { background: var(--color-error-container); color: var(--color-on-surface); }
+
+/* ---------- Superfícies ---------- */
+.card { background: var(--color-surface); border-radius: var(--radius-lg); padding: var(--spacing-lg); box-shadow: var(--shadow-sm); }
+.card-compact { background: var(--color-surface); border-radius: var(--radius-sm); padding: var(--spacing-md); border: 1px solid var(--color-neutral); }
+.card-title { color: var(--color-primary-strong); }
+.divider { height: 1px; background: var(--color-neutral); border: 0; margin: 0; }
+
+/* ---------- Chips, badges, alertas ---------- */
+.chip { display: inline-flex; align-items: center; gap: var(--spacing-xs); height: 32px; padding: 0 var(--spacing-sm-plus); border-radius: var(--radius-xs); background: var(--color-neutral); color: var(--color-on-surface); border: 0; cursor: pointer; }
+.chip[aria-pressed="true"] { background: var(--color-secondary); color: var(--color-on-secondary); }
+.chip.static { cursor: default; height: 28px; }
+.badge { display: inline-flex; align-items: center; gap: var(--spacing-xs); padding: var(--spacing-xs) var(--spacing-sm); border-radius: var(--radius-xs); color: var(--color-on-surface); }
+.badge .ph, .badge .ph-fill { font-size: 14px; }
+.badge-planning { background: var(--color-info-container); }
+.badge-confirmed { background: var(--color-success-container); }
+.badge-completed { background: var(--color-neutral); }
+.alert { display: flex; gap: var(--spacing-sm-plus); align-items: flex-start; padding: var(--spacing-md); border-radius: var(--radius-md); color: var(--color-on-surface); }
+.alert .ph-fill { font-size: 20px; color: var(--color-primary-strong); margin-top: 1px; }
+.alert-success { background: var(--color-success-container); }
+.alert-warning { background: var(--color-warning-container); }
+.alert-error { background: var(--color-error-container); }
+.alert-info { background: var(--color-info-container); }
+
+/* ---------- Progresso ---------- */
+.progress-track { height: 8px; border-radius: var(--radius-full); background: var(--color-neutral); overflow: hidden; }
+.progress-fill { height: 100%; border-radius: var(--radius-full); background: var(--color-primary); }
+
+/* ---------- Página: base ---------- */
+#app { padding-bottom: var(--spacing-4xl); }
+#app:focus { outline: none; }
+.page-work { padding-top: var(--spacing-xl); }
+body.discovery { background: var(--color-surface); }
+.meta { display: flex; align-items: center; gap: var(--spacing-sm); }
+.meta .ph { color: var(--color-primary); }
+.budget-mini { display: grid; gap: var(--spacing-sm); }
+.budget-mini .row { display: flex; justify-content: space-between; align-items: baseline; gap: var(--spacing-sm); }
+
+/* ---------- Página: painel (screens/painel.md) ---------- */
+.type-display-hero { font-family: var(--font-display-hero), serif; font-size: var(--text-display-hero); font-weight: var(--font-weight-display-hero); line-height: var(--text-display-hero--line-height); letter-spacing: var(--tracking-display-hero); }
+.type-label-overline { font-family: var(--font-label-overline), sans-serif; font-size: var(--text-label-overline); font-weight: var(--font-weight-label-overline); line-height: var(--text-label-overline--line-height); letter-spacing: var(--tracking-label-overline); text-transform: uppercase; }
+.hero { position: relative; min-height: 580px; padding-top: 72px; }
+body.discovery .app-bar { position: absolute; left: 0; right: 0; background: transparent; }
+.hero-art { position: absolute; top: 0; right: 0; width: 52%; height: 580px; pointer-events: none; }
+.hero-art .shape { position: absolute; inset: 0; background: var(--color-background); clip-path: url(#hero-shape); }
+.hero-art .photo { position: absolute; inset: 0 0 40px 32px; clip-path: url(#hero-photo); background: var(--color-neutral); }
+.hero-art .photo img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 40%; display: block; }
+.hero-art .photo .scene { width: 100%; height: 100%; display: block; }
+.hero-art > * { pointer-events: auto; }
+.hero-copy { position: relative; z-index: 2; width: 41.66%; padding: var(--spacing-3xl) 0 var(--spacing-5xl); display: grid; gap: var(--spacing-lg); justify-items: start; }
+.hero-overline { color: var(--color-primary-strong); display: flex; align-items: center; gap: var(--spacing-md); }
+.hero-overline svg { width: 88px; height: 24px; color: var(--color-primary); }
+.hero-title { color: var(--color-tertiary); }
+.hero-title em { display: block; font-style: italic; color: var(--color-primary); }
+.hero-text { color: var(--color-on-surface-variant); max-width: 38ch; }
+.hero-actions { display: flex; align-items: center; gap: var(--spacing-lg); flex-wrap: wrap; margin-top: var(--spacing-sm); }
+.button-pill { display: inline-flex; align-items: center; gap: var(--spacing-md); height: 56px; padding: 0 var(--spacing-sm) 0 var(--spacing-lg); border-radius: var(--radius-full); background: var(--color-primary-strong); color: var(--color-on-primary); border: 0; cursor: pointer; text-decoration: none; }
+.button-pill:hover { background: var(--color-tertiary); }
+.button-pill .pill-icon { width: 40px; height: 40px; border-radius: var(--radius-full); background: var(--color-surface); color: var(--color-primary-strong); display: grid; place-items: center; }
+.button-pill-light { background: var(--color-surface); color: var(--color-primary-strong); height: 44px; padding: 0 var(--spacing-md) 0 var(--spacing-md-plus); }
+.button-pill-light:hover { background: var(--color-success-container); }
+.link-button { display: inline-flex; align-items: center; gap: var(--spacing-sm); background: none; border: 0; padding: var(--spacing-sm) 0; color: var(--color-primary-strong); cursor: pointer; text-decoration: underline; text-underline-offset: 4px; text-decoration-color: var(--color-secondary); }
+.floating-card { text-decoration: none; color: inherit; position: absolute; top: 120px; right: var(--spacing-3xl); width: 232px; background: var(--color-surface); border-radius: var(--radius-lg); padding: var(--spacing-md); box-shadow: var(--shadow-xl); display: grid; gap: var(--spacing-sm); }
+.floating-card .top { display: flex; align-items: center; justify-content: space-between; gap: var(--spacing-sm); }
+.days-pill { background: var(--color-primary-strong); color: var(--color-on-primary); border-radius: var(--radius-full); min-width: 48px; height: 48px; display: grid; place-items: center; padding: 0 var(--spacing-sm); text-align: center; line-height: 1; }
+.days-pill small { display: block; font-size: 10px; font-weight: 600; margin-top: 2px; }
+.map-button { position: absolute; left: 8%; top: 46%; width: 112px; height: 112px; display: grid; place-items: center; text-decoration: none; color: var(--color-primary-strong); }
+.map-button svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.map-button .core { position: relative; width: 64px; height: 64px; border-radius: var(--radius-full); background: var(--color-surface); box-shadow: var(--shadow-lg); display: grid; place-items: center; }
+.map-button .core .ph { font-size: 28px; }
+.ring-bg { fill: var(--color-surface); fill-opacity: .82; }
+.search-bar { position: relative; z-index: 3; margin: calc(-1 * var(--spacing-2xl)) auto 0; width: 83.33%; min-height: 80px; background: var(--color-surface); border-radius: var(--radius-full); box-shadow: var(--shadow-xl); display: grid; grid-template-columns: repeat(4, 1fr) auto; align-items: center; padding: var(--spacing-sm-plus) var(--spacing-sm-plus) var(--spacing-sm-plus) var(--spacing-lg); }
+.search-field { display: flex; align-items: center; gap: var(--spacing-sm-plus); padding: 0 var(--spacing-md); border-right: 1px solid var(--color-neutral); min-height: 44px; cursor: pointer; text-align: left; background: none; border-top: 0; border-bottom: 0; border-left: 0; color: inherit; }
+.search-field:nth-child(4) { border-right: 0; }
+.search-field .field-icon { width: 44px; height: 44px; border-radius: var(--radius-full); background: var(--color-success-container); color: var(--color-primary-strong); display: grid; place-items: center; flex: none; }
+.search-field .field-text { flex: 1; min-width: 0; display: grid; }
+.search-field .caret { color: var(--color-on-surface-variant); font-size: 16px; }
+.search-button { width: 56px; height: 56px; border-radius: var(--radius-full); border: 0; background: var(--color-primary-strong); color: var(--color-on-primary); display: grid; place-items: center; cursor: pointer; }
+.search-button:hover { background: var(--color-tertiary); }
+.search-button .ph { font-size: 24px; }
+.search-button .label { display: none; }
+.band { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: var(--spacing-gutter) var(--spacing-xl); margin-top: var(--spacing-3xl); align-items: start; }
+.band-left { display: grid; gap: var(--spacing-lg); }
+.promo-banner { position: relative; overflow: hidden; border-radius: var(--radius-xl); background: var(--color-tertiary); color: var(--color-on-tertiary); min-height: 200px; padding: var(--spacing-xl); display: grid; align-content: center; justify-items: start; gap: var(--spacing-sm-plus); }
+.promo-banner .art { position: absolute; inset: 0 0 0 45%; }
+.promo-banner .art svg { width: 100%; height: 100%; display: block; }
+.promo-banner::before { content: ""; position: absolute; inset: 0; z-index: 1; background: linear-gradient(90deg, var(--color-tertiary) 50%, transparent 100%); }
+.promo-banner > :not(.art) { position: relative; z-index: 2; }
+.promo-badge { background: var(--color-primary-strong); color: var(--color-on-primary); border-radius: var(--radius-full); padding: var(--spacing-xs) var(--spacing-sm-plus); }
+.promo-banner h2 em { font-style: normal; color: var(--color-warning-container); }
+.stats-strip { background: var(--color-surface); border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); padding: var(--spacing-md-plus) var(--spacing-lg); display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--spacing-md); }
+.stats-strip .item { display: flex; align-items: center; gap: var(--spacing-sm-plus); }
+.stat-icon { width: 48px; height: 48px; border-radius: var(--radius-full); display: grid; place-items: center; color: var(--color-primary-strong); background: var(--color-success-container); flex: none; }
+.stat-icon.warm { background: var(--color-warning-container); }
+.stat-icon.cool { background: var(--color-info-container); }
+.section-row { display: flex; align-items: baseline; justify-content: space-between; gap: var(--spacing-md); margin-bottom: var(--spacing-md); }
+.section-row a { white-space: nowrap; display: inline-flex; align-items: center; gap: var(--spacing-xs); text-decoration: none; }
+.carousel { position: relative; }
+.track { display: grid; grid-auto-flow: column; grid-auto-columns: 200px; gap: var(--spacing-md); overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; padding: var(--spacing-xs); margin: calc(-1 * var(--spacing-xs)); }
+.track::-webkit-scrollbar { display: none; }
+.track.wide { grid-auto-columns: 220px; }
+.carousel-arrow { position: absolute; top: 50%; z-index: 2; transform: translateY(-50%); width: 40px; height: 40px; border-radius: var(--radius-full); border: 0; background: var(--color-surface); color: var(--color-on-surface); box-shadow: var(--shadow-lg); display: grid; place-items: center; cursor: pointer; }
+.carousel-arrow.prev { left: -20px; }
+.carousel-arrow.next { right: -20px; }
+.photo-card { position: relative; display: block; height: 240px; border-radius: var(--radius-lg); overflow: hidden; background: var(--color-neutral); scroll-snap-align: start; text-decoration: none; color: var(--color-on-tertiary); }
+.track.wide .photo-card { height: 260px; }
+.photo-card img, .photo-card .scene { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .3s; }
+.photo-card:hover img, .photo-card:hover .scene { transform: scale(1.04); }
+.photo-card::after { content: ""; position: absolute; inset: 45% 0 0; background: linear-gradient(to top, var(--color-photo-scrim), transparent); }
+.photo-card .caption { position: absolute; left: 0; right: 0; bottom: 0; z-index: 1; padding: var(--spacing-md); display: flex; align-items: flex-end; justify-content: space-between; gap: var(--spacing-sm); }
+.photo-card .caption p { color: var(--color-on-tertiary); }
+.photo-card .caption .sub { color: var(--color-neutral); }
+.photo-card .badge { position: absolute; top: var(--spacing-sm-plus); left: var(--spacing-sm-plus); z-index: 1; }
+.rating-pill { background: var(--color-surface); color: var(--color-on-surface); border-radius: var(--radius-sm); padding: var(--spacing-xs) var(--spacing-sm); display: inline-flex; align-items: center; gap: var(--spacing-xs); flex: none; }
+.rating-pill .ph-fill { font-size: 14px; color: var(--color-primary); }
+.favorite-button { position: absolute; top: var(--spacing-sm-plus); right: var(--spacing-sm-plus); z-index: 1; width: 32px; height: 32px; border-radius: var(--radius-full); border: 0; background: var(--color-surface); color: var(--color-primary-strong); display: grid; place-items: center; cursor: pointer; }
+.favorite-button .ph, .favorite-button .ph-fill { font-size: 18px; }
+.carousel-arrow[hidden] { display: none; }
+.band-full { margin-top: var(--spacing-4xl); }
+
+/* ---------- Página: viagem ---------- */
+.back { display: inline-flex; align-items: center; gap: var(--spacing-sm); text-decoration: none; margin-bottom: var(--spacing-md); }
+.hero-banner { background: var(--color-tertiary); color: var(--color-on-tertiary); border-radius: var(--radius-xl); padding: var(--spacing-xl); display: grid; grid-template-columns: 1fr auto; gap: var(--spacing-lg); position: relative; overflow: hidden; }
+.hero-banner > * { position: relative; }
+.hero-banner svg.pattern { position: absolute; right: 0; top: 0; height: 100%; width: 55%; }
+.hero-banner .hero-meta { display: flex; flex-wrap: wrap; gap: var(--spacing-sm) var(--spacing-lg); color: var(--color-neutral); margin-top: var(--spacing-sm-plus); }
+.hero-banner .hero-meta span { display: inline-flex; gap: var(--spacing-sm); align-items: center; }
+.hero-side { display: flex; flex-direction: column; align-items: flex-end; justify-content: space-between; gap: var(--spacing-md); }
+.code-box { display: flex; align-items: center; gap: var(--spacing-sm); background: var(--color-primary-strong); border-radius: var(--radius-md); padding: var(--spacing-sm) var(--spacing-sm) var(--spacing-sm) var(--spacing-md); }
+.code-box .code { font-family: var(--font-numeric-md), monospace; letter-spacing: 0.12em; font-weight: 700; }
+.hero-banner .avatar-stack .avatar { border-color: var(--color-tertiary); }
+.tabs { display: flex; gap: var(--spacing-xs); border-bottom: 1px solid var(--color-neutral); margin: var(--spacing-xl) 0 var(--spacing-lg); overflow-x: auto; scrollbar-width: none; }
+.tab { display: inline-flex; align-items: center; gap: var(--spacing-sm); height: 48px; padding: 0 var(--spacing-md); background: none; border: 0; border-bottom: 3px solid transparent; color: var(--color-on-surface-variant); cursor: pointer; white-space: nowrap; }
+.tab[aria-selected="true"] { color: var(--color-primary-strong); border-bottom-color: var(--color-primary); }
+.tab .count { background: var(--color-neutral); color: var(--color-on-surface); border-radius: var(--radius-full); padding: 2px var(--spacing-sm); font-size: 12px; }
+.two-col { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: var(--spacing-gutter); align-items: start; }
+.stack { display: grid; gap: var(--spacing-gutter); }
+.section-head { display: flex; align-items: center; justify-content: space-between; gap: var(--spacing-md); margin-bottom: var(--spacing-md); flex-wrap: wrap; }
+.stop { display: grid; grid-template-columns: 40px 1fr; gap: var(--spacing-md); }
+.stop-num { width: 40px; height: 40px; border-radius: var(--radius-full); background: var(--color-primary-strong); color: var(--color-on-primary); display: grid; place-items: center; }
+.stop-head { display: flex; justify-content: space-between; gap: var(--spacing-md); align-items: flex-start; flex-wrap: wrap; margin-bottom: var(--spacing-md); }
+.activities { display: grid; gap: var(--spacing-sm); }
+.activity { display: grid; grid-template-columns: 64px 40px 1fr auto; gap: var(--spacing-sm-plus); align-items: center; }
+.activity .time { color: var(--color-on-surface-variant); }
+.cat-icon { width: 40px; height: 40px; border-radius: var(--radius-sm); background: var(--color-success-container); display: grid; place-items: center; color: var(--color-primary-strong); flex: none; }
+.activity .right { text-align: right; display: grid; gap: var(--spacing-xs); justify-items: end; }
+.kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--spacing-gutter); margin-bottom: var(--spacing-gutter); }
+.kpi { display: grid; gap: var(--spacing-sm); }
+.cat-rows { display: grid; gap: var(--spacing-md-plus); }
+.cat-row { display: grid; gap: var(--spacing-sm); }
+.cat-row .row { display: flex; justify-content: space-between; gap: var(--spacing-md); align-items: center; }
+.cat-row .label { display: inline-flex; align-items: center; gap: var(--spacing-sm); }
+.list { display: grid; }
+.list > li { display: flex; align-items: center; gap: var(--spacing-md); padding: var(--spacing-sm-plus) 0; border-bottom: 1px solid var(--color-neutral); }
+.list > li:last-child { border-bottom: 0; }
+.list .grow { flex: 1; min-width: 0; }
+.list .money { text-align: right; }
+.transfer { display: flex; align-items: center; gap: var(--spacing-sm); flex-wrap: wrap; }
+.empty { text-align: center; display: grid; justify-items: center; gap: var(--spacing-sm-plus); padding: var(--spacing-2xl) var(--spacing-lg); }
+.empty > .ph { font-size: 48px; color: var(--color-primary); }
+.select { height: 40px; border: 1px solid var(--color-neutral); border-radius: var(--radius-sm); background: var(--color-surface); padding: 0 var(--spacing-sm); color: var(--color-on-surface); }
+[data-can-edit="false"] .can-edit { display: none !important; }
+
+/* ---------- Responsivo ---------- */
+@media (max-width: 1023px) {
+  .top-nav { gap: var(--spacing-lg); }
+  .hero-copy { width: 50%; }
+  .search-bar { width: 100%; }
+  .band { grid-template-columns: 1fr; }
+  .two-col { grid-template-columns: 1fr; }
+  .kpis { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 639px) {
+  .container { padding: 0 var(--spacing-margin-mobile); }
+  .top-nav, .bar-actions .avatar { display: none; }
+  .app-bar .container { justify-content: space-between; }
+  .bottom-nav { display: flex; position: fixed; bottom: 0; left: 0; right: 0; background: var(--color-surface); box-shadow: var(--shadow-md); z-index: 10; padding-bottom: env(safe-area-inset-bottom); }
+  .bottom-nav a { flex: 1; display: grid; justify-items: center; gap: 2px; padding: var(--spacing-sm) 0; min-height: 56px; text-decoration: none; color: var(--color-on-surface-variant); }
+  .bottom-nav a .ph, .bottom-nav a .ph-fill { font-size: 24px; }
+  .bottom-nav a[aria-current="page"] { color: var(--color-primary-strong); }
+  #app { padding-bottom: calc(var(--spacing-5xl) + var(--spacing-md)); }
+  .page-work { padding-top: var(--spacing-lg); }
+  .kpis { grid-template-columns: 1fr; }
+  body.discovery .app-bar { position: sticky; background: var(--color-surface); }
+  .app-bar { height: 64px; }
+  .brand-tagline { display: none; }
+  .bar-actions .button-circle { box-shadow: none; }
+  /* Painel no celular (screens/painel.md › 5) */
+  .hero { padding-top: 0; min-height: 0; }
+  .hero-art { position: relative; width: 100%; height: 256px; }
+  .hero-art .shape { display: none; }
+  .hero-art .photo { inset: 0; clip-path: url(#hero-photo-mobile); }
+  .floating-card { top: auto; bottom: var(--spacing-2xl); right: var(--spacing-md); width: auto; padding: var(--spacing-sm) var(--spacing-sm) var(--spacing-sm) var(--spacing-md); }
+  .floating-card .top + .top { display: none; }
+  .days-pill { min-width: 40px; height: 40px; }
+  .map-button { display: none; }
+  .hero-copy { width: 100%; padding: var(--spacing-md) 0 0; gap: var(--spacing-md); }
+  .type-display-hero { font-size: var(--text-display-hero-mobile); line-height: var(--text-display-hero-mobile--line-height); letter-spacing: 0; }
+  .hero-actions { width: 100%; }
+  .hero-actions .button-pill { width: 100%; justify-content: space-between; }
+  .search-bar { margin-top: var(--spacing-lg); grid-template-columns: 1fr; border-radius: var(--radius-xl); padding: var(--spacing-sm) var(--spacing-md) var(--spacing-md); }
+  .search-field { border-right: 0; border-bottom: 1px solid var(--color-neutral); min-height: 64px; padding: 0; }
+  .search-field:nth-child(4) { border-bottom: 0; }
+  .search-button { width: 100%; border-radius: var(--radius-full); gap: var(--spacing-sm); display: flex; justify-content: center; align-items: center; margin-top: var(--spacing-sm); }
+  .search-button .label { display: inline; }
+  .search-button { background: var(--color-success-container); color: var(--color-primary-strong); }
+  .search-button:hover { background: var(--color-secondary); color: var(--color-on-secondary); }
+  .band { margin-top: var(--spacing-xl); }
+  .promo-banner { padding: var(--spacing-lg); }
+  .promo-banner .art { inset: 0 0 0 55%; }
+  .promo-banner::before { background: linear-gradient(90deg, var(--color-tertiary) 60%, transparent 100%); }
+  .stats-strip { padding: var(--spacing-md); gap: var(--spacing-sm); }
+  .stats-strip .item { flex-direction: column; align-items: flex-start; gap: var(--spacing-sm); }
+  .stat-icon { width: 40px; height: 40px; }
+  .carousel-arrow { display: none; }
+  .track { grid-auto-columns: 72%; }
+  .track.wide { grid-auto-columns: 72%; }
+  .band-full { margin-top: var(--spacing-2xl); }
+  .hero-banner { grid-template-columns: 1fr; padding: var(--spacing-lg); border-radius: var(--radius-lg); }
+  .hero-banner h1 { font-size: var(--text-headline-lg); line-height: var(--text-headline-lg--line-height); }
+  .tab { padding: 0 var(--spacing-sm-plus); }
+  .hero-side { align-items: flex-start; }
+  .activity { grid-template-columns: 40px 1fr auto; }
+  .activity .time { grid-column: 2 / 4; grid-row: 2; }
+}
+</style>
+</head>
+<body>
+
+<header class="app-bar">
+  <div class="container">
+    <a class="brand" href="#/viagens"><span class="brand-mark"><i class="ph-fill ph-compass" aria-hidden="true"></i></span>
+      <span><span class="type-headline-sm">ViajaJunto</span><span class="brand-tagline type-body-sm">Viagens em grupo</span></span></a>
+    <nav class="top-nav" aria-label="Principal">
+      <a class="nav-item type-label-lg" href="#/viagens" aria-current="page">Minhas viagens</a>
+      <a class="nav-item type-label-lg" href="#/viagens">Descobrir</a>
+      <a class="nav-item type-label-lg" href="#/viagens">Avaliações</a>
+    </nav>
+    <div class="bar-actions">
+      <button class="icon-button button-circle" type="button" aria-label="Notificações, 3 não lidas"><i class="ph ph-bell" aria-hidden="true"></i><span class="dot" aria-hidden="true">3</span></button>
+      <span class="avatar type-label-md" title="Gustavo Fidélis" aria-label="Perfil de Gustavo Fidélis" role="img">GF</span>
+    </div>
+  </div>
+</header>
+
+<!-- Recortes orgânicos da foto do hero (DESIGN.md › Shapes). -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <clipPath id="hero-photo" clipPathUnits="objectBoundingBox">
+    <path d="M0.40,0 H1 V0.88 C0.90,0.83 0.80,0.86 0.70,0.93 C0.58,1.01 0.42,1.00 0.30,0.92 C0.18,0.84 0.20,0.70 0.12,0.60 C0.04,0.50 0.02,0.38 0.10,0.24 C0.18,0.10 0.30,0.06 0.40,0 Z"/>
+  </clipPath>
+  <clipPath id="hero-photo-mobile" clipPathUnits="objectBoundingBox">
+    <path d="M0,0 H1 V0.86 C0.80,0.80 0.62,0.96 0.40,0.98 C0.24,1.00 0.10,0.94 0,0.88 Z"/>
+  </clipPath>
+  <clipPath id="hero-shape" clipPathUnits="objectBoundingBox">
+    <path d="M0.32,0 H1 V0.97 C0.86,1.00 0.74,0.97 0.62,0.99 C0.44,1.02 0.26,0.98 0.16,0.86 C0.06,0.74 0.10,0.60 0.04,0.46 C-0.02,0.32 0.10,0.14 0.32,0 Z"/>
+  </clipPath>
+</svg>
+
+<main id="app" tabindex="-1"></main>
+
+<nav class="bottom-nav type-label-sm" aria-label="Principal (celular)">
+  <a href="#/viagens" aria-current="page"><i class="ph-fill ph-airplane-tilt" aria-hidden="true"></i>Viagens</a>
+  <a href="#/viagens"><i class="ph ph-globe-hemisphere-west" aria-hidden="true"></i>Descobrir</a>
+  <a href="#/viagens"><i class="ph ph-bell" aria-hidden="true"></i>Avisos</a>
+  <a href="#/viagens"><i class="ph ph-user-circle" aria-hidden="true"></i>Perfil</a>
+</nav>
+
+<script>
+/* ---------- Dados de exemplo (formato próximo ao da API) ---------- */
+const ME = 'gustavo';
+const PEOPLE = {
+  gustavo: { name: 'Gustavo Fidélis', initials: 'GF' },
+  bernardo: { name: 'Bernardo Lykawka', initials: 'BL' },
+  ana: { name: 'Ana Souza', initials: 'AS' },
+  lucas: { name: 'Lucas Prado', initials: 'LP' },
+  marina: { name: 'Marina Costa', initials: 'MC' },
+};
+const CATEGORIES = {
+  TOUR: { label: 'Passeio', icon: 'ticket' },
+  FOOD: { label: 'Comida', icon: 'fork-knife' },
+  LODGING: { label: 'Hospedagem', icon: 'bed' },
+  TRANSPORT: { label: 'Transporte', icon: 'bus' },
+  OTHER: { label: 'Outros', icon: 'dots-three' },
+};
+const STATUS = {
+  PLANNING: { label: 'Planejando', badge: 'badge-planning', icon: 'ph ph-circle-notch' },
+  CONFIRMED: { label: 'Confirmada', badge: 'badge-confirmed', icon: 'ph-fill ph-check-circle' },
+  COMPLETED: { label: 'Concluída', badge: 'badge-completed', icon: 'ph-fill ph-flag-checkered' },
+};
+const ROLE = {
+  OWNER: { label: 'Dono(a)', icon: 'crown' },
+  EDITOR: { label: 'Editor(a)', icon: 'pencil-simple' },
+  VIEWER: { label: 'Visualizador(a)', icon: 'eye' },
+};
+
+const TRIPS = [
+  {
+    id: 'eurotrip', name: 'Eurotrip 2027', status: 'CONFIRMED', start: '2027-03-12', end: '2027-04-02',
+    scene: 'city', photo: 'assets/photos/londres.jpg', code: 'VJ-7K2P', currency: 'BRL',
+    members: [['gustavo', 'OWNER'], ['bernardo', 'EDITOR'], ['ana', 'EDITOR'], ['lucas', 'VIEWER']],
+    budget: 12000,
+    plannedByCategory: { LODGING: 4200, TRANSPORT: 2150, TOUR: 1180, FOOD: 690, OTHER: 200 },
+    unpriced: 3,
+    stops: [
+      { city: 'Londres', country: 'Reino Unido', from: '2027-03-12', to: '2027-03-18', activities: [
+        { time: '10:00', day: '2027-03-13', name: 'London Eye', type: 'TOUR', cost: 412.4 },
+        { time: '13:30', day: '2027-03-13', name: 'Almoço no Borough Market', type: 'FOOD', cost: 318 },
+        { time: '09:00', day: '2027-03-15', name: 'British Museum', type: 'TOUR', cost: null },
+      ] },
+      { city: 'Paris', country: 'França', from: '2027-03-18', to: '2027-03-25', activities: [
+        { time: '08:15', day: '2027-03-18', name: 'Eurostar Londres → Paris', type: 'TRANSPORT', cost: 1240 },
+        { time: '19:00', day: '2027-03-20', name: 'Passeio de barco no Sena', type: 'TOUR', cost: 380 },
+      ] },
+      { city: 'Lisboa', country: 'Portugal', from: '2027-03-25', to: '2027-04-02', activities: [] },
+    ],
+    expenses: [
+      { desc: 'Hotel em Londres (6 noites)', payer: 'gustavo', date: '2027-03-12', amount: 2380, type: 'LODGING' },
+      { desc: 'Eurostar Londres → Paris', payer: 'bernardo', date: '2027-03-18', amount: 1240, type: 'TRANSPORT' },
+      { desc: 'Airbnb em Paris (sinal)', payer: 'lucas', date: '2027-03-18', amount: 785, type: 'LODGING' },
+      { desc: 'Ingressos London Eye', payer: 'ana', date: '2027-03-13', amount: 412.4, type: 'TOUR' },
+      { desc: 'Almoço no Borough Market', payer: 'gustavo', date: '2027-03-13', amount: 318, type: 'FOOD' },
+    ],
+  },
+  {
+    id: 'chapada', name: 'Chapada Diamantina', status: 'PLANNING', start: '2027-07-08', end: '2027-07-16',
+    scene: 'mesa', photo: null, code: 'VJ-Q4M9', currency: 'BRL',
+    members: [['marina', 'OWNER'], ['gustavo', 'EDITOR'], ['bernardo', 'EDITOR']],
+    budget: null, plannedByCategory: {}, unpriced: 0, stops: [], expenses: [],
+  },
+  {
+    id: 'mendoza', name: 'Buenos Aires e Mendoza', status: 'PLANNING', start: '2027-09-03', end: '2027-09-14',
+    scene: 'vineyard', photo: null, code: 'VJ-2HXT', currency: 'BRL',
+    members: [['ana', 'OWNER'], ['lucas', 'EDITOR'], ['gustavo', 'VIEWER']],
+    budget: 9000, plannedByCategory: { LODGING: 3100, TRANSPORT: 1900, TOUR: 650, FOOD: 450, OTHER: 0 }, unpriced: 1,
+    stops: [
+      { city: 'Buenos Aires', country: 'Argentina', from: '2027-09-03', to: '2027-09-08', activities: [
+        { time: '20:30', day: '2027-09-04', name: 'Show de tango em San Telmo', type: 'TOUR', cost: 390 },
+      ] },
+      { city: 'Mendoza', country: 'Argentina', from: '2027-09-08', to: '2027-09-14', activities: [
+        { time: '10:00', day: '2027-09-10', name: 'Tour de vinícolas em Luján de Cuyo', type: 'TOUR', cost: 260 },
+      ] },
+    ],
+    expenses: [],
+  },
+  {
+    id: 'rio', name: 'Réveillon no Rio', status: 'COMPLETED', start: '2025-12-29', end: '2026-01-03',
+    scene: 'coast', photo: null, code: 'VJ-9RIO', currency: 'BRL',
+    members: [['gustavo', 'OWNER'], ['bernardo', 'EDITOR']],
+    budget: 4000, plannedByCategory: { LODGING: 2200, TRANSPORT: 900, FOOD: 600, TOUR: 150, OTHER: 0 }, unpriced: 0,
+    stops: [{ city: 'Rio de Janeiro', country: 'Brasil', from: '2025-12-29', to: '2026-01-03', activities: [] }],
+    expenses: [],
+  },
+];
+
+/* ---------- Formatação pt-BR ---------- */
+const money = (v, currency = 'BRL') => new Intl.NumberFormat('pt-BR', { style: 'currency', currency }).format(v);
+const d = (iso) => new Date(iso + 'T12:00:00');
+const fmtDay = (iso, opts = { day: 'numeric', month: 'short' }) => new Intl.DateTimeFormat('pt-BR', opts).format(d(iso));
+const fmtRange = (a, b) => `${fmtDay(a)} – ${fmtDay(b, { day: 'numeric', month: 'short', year: 'numeric' })}`;
+const nights = (a, b) => Math.round((d(b) - d(a)) / 86400000);
+const sum = (xs) => xs.reduce((t, x) => t + x, 0);
+const myRole = (t) => (t.members.find(([p]) => p === ME) || [])[1];
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+const avatars = (members, max = 4) => `<div class="avatar-stack">${members.slice(0, max).map(([p]) =>
+  `<span class="avatar sm type-label-md" title="${PEOPLE[p].name}">${PEOPLE[p].initials}</span>`).join('')}</div>`;
+const statusBadge = (s) => `<span class="badge ${STATUS[s].badge} type-label-sm"><i class="${STATUS[s].icon}" aria-hidden="true"></i>${STATUS[s].label}</span>`;
+const pattern = (cls = '') => `<svg class="${cls}" viewBox="0 0 400 200" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+  <g fill="none" stroke="currentColor" stroke-opacity=".14" stroke-width="1.5">
+    <circle cx="330" cy="40" r="40"/><circle cx="330" cy="40" r="70"/><circle cx="330" cy="40" r="100"/><circle cx="330" cy="40" r="130"/>
+    <path d="M0 170 Q 100 120 200 160 T 400 140"/><path d="M0 190 Q 110 140 210 180 T 400 165"/>
+  </g></svg>`;
+
+/* ---------- Destinos mais bem avaliados (GET /api/destination-catalog/top) ---------- */
+const TOP_DESTINATIONS = [
+  { city: 'Lisboa', country: 'Portugal', rating: 4.9, reviews: 214, scene: 'tram' },
+  { city: 'Quioto', country: 'Japão', rating: 4.8, reviews: 187, scene: 'pagoda' },
+  { city: 'El Chaltén', country: 'Argentina', rating: 4.8, reviews: 96, scene: 'peaks' },
+  { city: 'Paris', country: 'França', rating: 4.7, reviews: 342, scene: 'eiffel' },
+  { city: 'Santorini', country: 'Grécia', rating: 4.7, reviews: 158, scene: 'domes' },
+  { city: 'Rio de Janeiro', country: 'Brasil', rating: 4.6, reviews: 401, scene: 'coast' },
+];
+
+/* ---------- Ilustrações no lugar das fotos (só no protótipo; no app, use photoUrl) ---------- */
+function scene(kind) {
+  const C = { sky: 'var(--color-info-container)', warm: 'var(--color-warning-container)', linen: 'var(--color-background)', sand: 'var(--color-neutral)',
+    sage: 'var(--color-secondary)', leaf: 'var(--color-primary)', pine: 'var(--color-primary-strong)', forest: 'var(--color-tertiary)', white: 'var(--color-surface)' };
+  const sky = { coast: C.sky, domes: C.sky, peaks: C.sky, eiffel: C.linen, pagoda: C.warm, tram: C.warm, mesa: C.warm, vineyard: C.linen, city: C.sky }[kind] || C.sky;
+  const sun = `<circle cx="150" cy="62" r="22" fill="${C.warm}"/><circle cx="150" cy="62" r="14" fill="${C.white}" fill-opacity=".55"/>`;
+  const L = {
+    coast: `<path d="M0 150 C30 150 40 70 70 66 C92 64 98 120 112 150 Z" fill="${C.pine}"/><path d="M96 150 C110 120 122 112 134 116 C150 122 160 140 200 150 Z" fill="${C.leaf}"/>
+      <rect y="150" width="200" height="100" fill="${C.sky}"/><path d="M0 162 H200 M0 176 H200 M20 190 H180" stroke="${C.white}" stroke-opacity=".7" stroke-width="2"/><path d="M0 214 C60 196 140 196 200 214 V250 H0 Z" fill="${C.sand}"/>`,
+    domes: `<path d="M0 120 C60 96 140 104 200 92 V250 H0 Z" fill="${C.sage}"/><g fill="${C.white}"><rect x="18" y="128" width="46" height="44"/><rect x="70" y="118" width="40" height="54"/><rect x="118" y="132" width="56" height="40"/><rect x="30" y="176" width="70" height="34"/><rect x="108" y="176" width="64" height="34"/></g>
+      <g fill="${C.pine}"><path d="M70 118 a20 20 0 0 1 40 0 Z"/><path d="M130 132 a14 14 0 0 1 28 0 Z"/></g><g fill="${C.sky}"><rect x="34" y="144" width="8" height="12"/><rect x="84" y="140" width="8" height="12"/><rect x="138" y="148" width="8" height="12"/><rect x="58" y="188" width="8" height="10"/><rect x="136" y="188" width="8" height="10"/></g><rect y="210" width="200" height="40" fill="${C.sky}"/>`,
+    peaks: `<path d="M0 170 L46 90 L70 124 L112 40 L150 112 L170 88 L200 132 V250 H0 Z" fill="${C.pine}"/><path d="M112 40 L128 70 L118 66 L108 76 L100 62 Z M46 90 L56 108 L46 104 L38 112 Z" fill="${C.white}"/>
+      <path d="M0 176 C60 160 140 164 200 172 V250 H0 Z" fill="${C.leaf}"/><rect y="196" width="200" height="54" fill="${C.sky}"/><path d="M30 214 H90 M120 226 H180" stroke="${C.white}" stroke-width="2" stroke-opacity=".8"/>`,
+    eiffel: `<path d="M0 190 C60 176 140 180 200 188 V250 H0 Z" fill="${C.sage}"/><g fill="${C.forest}"><path d="M100 36 L104 36 L112 110 L124 190 L112 190 L102 140 L98 140 L88 190 L76 190 L88 110 Z"/><rect x="84" y="104" width="32" height="6"/><rect x="90" y="70" width="20" height="5"/></g>
+      <g fill="${C.pine}"><rect x="10" y="150" width="34" height="44"/><rect x="150" y="146" width="40" height="48"/></g>`,
+    pagoda: `<path d="M0 180 C50 160 150 168 200 176 V250 H0 Z" fill="${C.leaf}"/><g fill="${C.forest}"><rect x="94" y="56" width="12" height="130"/><path d="M66 92 H134 L120 80 H80 Z M60 122 H140 L124 108 H76 Z M54 154 H146 L128 138 H72 Z M74 66 H126 L112 56 H88 Z"/></g>
+      <g fill="${C.sand}"><circle cx="30" cy="150" r="20"/><circle cx="48" cy="138" r="16"/><circle cx="170" cy="146" r="22"/></g><rect y="200" width="200" height="50" fill="${C.pine}"/>`,
+    tram: `<g fill="${C.sand}"><rect x="0" y="96" width="44" height="110"/><rect x="150" y="84" width="50" height="122"/></g><g fill="${C.white}"><rect x="44" y="112" width="40" height="94"/><rect x="112" y="104" width="38" height="102"/></g><rect x="84" y="120" width="28" height="86" fill="${C.sage}"/>
+      <rect x="40" y="150" width="104" height="54" rx="8" fill="${C.warm}" stroke="${C.forest}" stroke-width="3"/><g fill="${C.sky}"><rect x="50" y="160" width="16" height="16"/><rect x="72" y="160" width="16" height="16"/><rect x="94" y="160" width="16" height="16"/><rect x="116" y="160" width="16" height="16"/></g><path d="M92 150 L100 132" stroke="${C.forest}" stroke-width="3"/><rect y="206" width="200" height="44" fill="${C.forest}"/>`,
+    mesa: `<path d="M0 150 L20 98 H86 L104 150 Z M98 150 L118 70 H172 L190 150 Z" fill="${C.leaf}"/><path d="M20 98 H86 L90 108 H16 Z M118 70 H172 L176 80 H114 Z" fill="${C.pine}"/><path d="M0 150 C70 136 130 144 200 150 V250 H0 Z" fill="${C.pine}"/><path d="M0 196 C70 182 130 190 200 196 V250 H0 Z" fill="${C.forest}"/>`,
+    vineyard: `<path d="M0 120 L40 70 L70 96 L110 50 L150 92 L176 74 L200 96 V250 H0 Z" fill="${C.sage}"/><path d="M110 50 L122 66 L104 64 Z" fill="${C.white}"/><path d="M0 150 C70 136 130 140 200 148 V250 H0 Z" fill="${C.leaf}"/>
+      <g stroke="${C.pine}" stroke-width="7" stroke-linecap="round"><path d="M-10 250 L60 154"/><path d="M30 250 L84 154"/><path d="M70 250 L106 154"/><path d="M110 250 L128 154"/><path d="M150 250 L150 154"/><path d="M190 250 L172 154"/></g>`,
+    city: `<g fill="${C.sage}"><rect x="0" y="120" width="40" height="90"/><rect x="150" y="110" width="50" height="100"/></g><g fill="${C.pine}"><rect x="40" y="96" width="30" height="114"/><rect x="118" y="88" width="32" height="122"/><path d="M84 40 L92 22 L100 40 V210 H84 Z"/></g><rect y="200" width="200" height="50" fill="${C.forest}"/>`,
+  };
+  return `<svg class="scene" viewBox="0 0 200 250" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="200" height="250" fill="${sky}"/>${['eiffel', 'pagoda', 'peaks'].includes(kind) ? '' : sun}${L[kind] || L.city}</svg>`;
+}
+const media = (photo, kind, alt = '') => photo ? `<img src="${photo}" alt="${esc(alt)}" loading="lazy">` : scene(kind);
+
+/* ---------- Tela: Painel inicial (screens/painel.md) ---------- */
+const TODAY = new Date();
+const daysUntil = (iso) => Math.max(0, Math.ceil((d(iso) - TODAY) / 86400000));
+
+function renderDashboard() {
+  const upcoming = TRIPS.filter((t) => t.status !== 'COMPLETED' && d(t.start) > TODAY).sort((a, b) => a.start.localeCompare(b.start));
+  const next = upcoming[0];
+  const active = TRIPS.filter((t) => t.status !== 'COMPLETED');
+  const companions = new Set(TRIPS.flatMap((t) => t.members.map(([p]) => p)).filter((p) => p !== ME)).size;
+  const days = next ? daysUntil(next.start) : 0;
+  const nextFree = next && next.budget ? next.budget - sum(next.expenses.map((e) => e.amount)) : null;
+
+  return `
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="hero-art">
+      <div class="shape" aria-hidden="true"></div>
+      <div class="photo">${media(next?.photo, next?.scene || 'peaks', next ? `Foto de ${next.stops[0]?.city}, primeiro destino de ${next.name}` : '')}</div>
+      ${next ? `<a class="floating-card" href="#/viagem/${next.id}" aria-label="Próxima viagem: ${esc(next.name)}, faltam ${days} dias">
+        <div class="top"><div><p class="type-label-sm muted">Próxima viagem</p><p class="type-title-md" style="color:var(--color-tertiary)">${esc(next.name)}</p></div>
+          <span class="days-pill"><span class="type-numeric-md">${days}<small>dias</small></span></span></div>
+        <div class="top">${avatars(next.members)}<span class="type-body-sm muted">${next.members.length} viajantes</span></div>
+      </a>` : ''}
+      <a class="map-button" href="#/viagens" aria-label="Ver os países visitados no mapa">
+        <svg viewBox="0 0 112 112" aria-hidden="true"><defs><path id="ring" d="M56 56 m-44 0 a44 44 0 1 1 88 0 a44 44 0 1 1 -88 0"/></defs>
+          <circle class="ring-bg" cx="56" cy="56" r="54"/>
+          <text class="type-label-sm" fill="currentColor" style="letter-spacing:.24em"><textPath href="#ring">ver no mapa · ver no mapa ·</textPath></text></svg>
+        <span class="core"><i class="ph ph-map-trifold" aria-hidden="true"></i></span>
+      </a>
+    </div>
+    <div class="container">
+      <div class="hero-copy">
+        <p class="hero-overline type-label-overline">Planeje. Divida. Viaje.
+          <svg viewBox="0 0 88 24" aria-hidden="true"><path d="M2 20 C24 22 44 18 62 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="4 4"/><path d="M70 4 l12 6 -12 6 2 -6 z" fill="currentColor"/></svg></p>
+        <h1 id="hero-title" class="hero-title type-display-hero">Sua viagem <em>começa aqui.</em></h1>
+        <p class="hero-text type-body-lg">Monte o roteiro com o grupo, controle o orçamento e descubra os lugares mais bem avaliados.</p>
+        <div class="hero-actions">
+          <button class="button-pill type-label-lg" type="button">Nova viagem <span class="pill-icon"><i class="ph ph-arrow-right" aria-hidden="true"></i></span></button>
+          <button class="link-button type-label-lg" type="button"><i class="ph ph-ticket" aria-hidden="true"></i>Entrar com código</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="container">
+    <form class="search-bar" role="search" aria-label="Começar uma viagem" onsubmit="return false">
+      ${[['map-pin', 'Para onde?', 'Buscar destinos'], ['calendar-blank', 'Ida', 'Adicionar data'], ['calendar-blank', 'Volta', 'Adicionar data'], ['users-three', 'Viajantes', 'Só você']].map(([ic, l, v]) =>
+        `<button class="search-field" type="button"><span class="field-icon"><i class="ph ph-${ic}" aria-hidden="true"></i></span>
+          <span class="field-text"><span class="type-label-md">${l}</span><span class="type-body-sm muted">${v}</span></span><i class="ph ph-caret-down caret" aria-hidden="true"></i></button>`).join('')}
+      <button class="search-button type-label-lg" type="submit" aria-label="Buscar"><i class="ph ph-magnifying-glass" aria-hidden="true"></i><span class="label">Buscar</span></button>
+    </form>
+
+    <div class="band">
+      <div class="band-left">
+        ${next ? `<section class="promo-banner" aria-labelledby="promo-title">
+          <div class="art" aria-hidden="true">${scene('peaks')}</div>
+          <span class="promo-badge type-label-sm">Próxima viagem</span>
+          <h2 id="promo-title" class="type-headline-md">${esc(next.name)}: <em>faltam ${days} dias</em></h2>
+          <p class="type-body-sm" style="color:var(--color-neutral)">${nextFree !== null ? `${money(nextFree)} ainda livres no orçamento` : 'Defina o orçamento do grupo'}</p>
+          <a class="button button-pill-light type-label-md" href="#/viagem/${next.id}">Abrir roteiro <i class="ph ph-arrow-right" aria-hidden="true"></i></a>
+        </section>` : ''}
+        <section class="stats-strip" aria-label="Seus números">
+          <div class="item"><span class="stat-icon"><i class="ph ph-airplane-tilt" aria-hidden="true"></i></span><div><p class="type-title-md">${active.length}</p><p class="type-body-sm muted">viagens</p></div></div>
+          <div class="item"><span class="stat-icon warm"><i class="ph ph-globe-hemisphere-west" aria-hidden="true"></i></span><div><p class="type-title-md">6</p><p class="type-body-sm muted">países</p></div></div>
+          <div class="item"><span class="stat-icon cool"><i class="ph ph-users-three" aria-hidden="true"></i></span><div><p class="type-title-md">${companions}</p><p class="type-body-sm muted">companheiros</p></div></div>
+        </section>
+      </div>
+
+      <section aria-labelledby="my-trips">
+        <div class="section-row"><h2 id="my-trips" class="type-headline-sm" style="color:var(--color-tertiary)">Minhas viagens</h2>
+          <a class="type-label-md" href="#/viagens">Ver todas <i class="ph ph-caret-right" aria-hidden="true"></i></a></div>
+        ${carousel('trips', TRIPS.map(tripCard).join(''))}
+      </section>
+    </div>
+
+    <section class="band-full" aria-labelledby="top-dest">
+      <div class="section-row"><h2 id="top-dest" class="type-headline-sm" style="color:var(--color-tertiary)">Destinos mais bem avaliados</h2>
+        <a class="type-label-md" href="#/viagens">Ver todos <i class="ph ph-caret-right" aria-hidden="true"></i></a></div>
+      ${carousel('top', TOP_DESTINATIONS.map(destinationCard).join(''), true)}
+    </section>
+  </div>`;
+}
+
+function carousel(id, cards, wide = false) {
+  return `<div class="carousel">
+    <button class="carousel-arrow prev" type="button" data-scroll="${id}" data-dir="-1" aria-label="Anteriores" hidden><i class="ph ph-caret-left" aria-hidden="true"></i></button>
+    <div class="track${wide ? ' wide' : ''}" id="track-${id}">${cards}</div>
+    <button class="carousel-arrow next" type="button" data-scroll="${id}" data-dir="1" aria-label="Próximos"><i class="ph ph-caret-right" aria-hidden="true"></i></button>
+  </div>`;
+}
+
+function tripCard(t) {
+  return `<a class="photo-card" href="#/viagem/${t.id}" aria-label="${esc(t.name)}, ${STATUS[t.status].label}, ${fmtRange(t.start, t.end)}">
+    ${media(t.photo, t.scene, '')}${statusBadge(t.status)}
+    <div class="caption"><div><p class="type-title-md">${esc(t.name)}</p><p class="sub type-body-sm">${fmtDay(t.start)} – ${fmtDay(t.end)}</p></div>
+      <span class="rating-pill type-label-md" title="${t.members.length} viajantes"><i class="ph-fill ph-users-three" aria-hidden="true"></i>${t.members.length}</span></div>
+  </a>`;
+}
+
+function destinationCard(x) {
+  const rating = x.rating.toLocaleString('pt-BR', { minimumFractionDigits: 1 });
+  return `<article class="photo-card" tabindex="0" aria-label="${x.city}, ${x.country}, nota ${rating} em ${x.reviews} avaliações">
+    ${scene(x.scene)}
+    <button class="favorite-button" type="button" aria-label="Salvar ${x.city}" aria-pressed="false"><i class="ph ph-heart" aria-hidden="true"></i></button>
+    <div class="caption"><div><p class="type-title-md">${x.city}</p><p class="sub type-body-sm">${x.country}</p></div>
+      <span class="rating-pill type-label-md"><i class="ph-fill ph-star" aria-hidden="true"></i>${rating}</span></div>
+  </article>`;
+}
+
+/* ---------- Tela: Detalhe da viagem ---------- */
+let tab = 'roteiro';
+function renderTrip(t) {
+  const role = myRole(t);
+  const canEdit = role !== 'VIEWER';
+  const activityCount = sum(t.stops.map((s) => s.activities.length));
+  const tabs = [['roteiro', 'Roteiro', 'map-pin', t.stops.length], ['orcamento', 'Orçamento', 'wallet'], ['despesas', 'Despesas', 'receipt', t.expenses.length], ['membros', 'Membros', 'users-three', t.members.length]];
+
+  return `
+  <div class="container page-work" data-can-edit="${canEdit}">
+  <a class="back type-label-md" href="#/viagens"><i class="ph ph-arrow-left" aria-hidden="true"></i>Minhas viagens</a>
+
+  <section class="hero-banner" aria-labelledby="trip-title">
+    ${pattern('pattern')}
+    <div>
+      ${statusBadge(t.status)}
+      <h1 id="trip-title" class="type-display" style="margin-top:var(--spacing-sm-plus)">${esc(t.name)}</h1>
+      <p class="hero-meta type-body-md">
+        <span><i class="ph ph-calendar-blank" aria-hidden="true"></i>${fmtRange(t.start, t.end)} · ${nights(t.start, t.end)} noites</span>
+        <span><i class="ph ph-map-pin" aria-hidden="true"></i>${t.stops.length} ${t.stops.length === 1 ? 'destino' : 'destinos'} · ${activityCount} ${activityCount === 1 ? 'atividade' : 'atividades'}</span>
+        <span><i class="ph ph-${ROLE[role].icon}" aria-hidden="true"></i>Você é ${ROLE[role].label.toLowerCase()}</span>
+      </p>
+    </div>
+    <div class="hero-side">
+      ${avatars(t.members, 5)}
+      ${role === 'OWNER' ? `<div class="code-box"><span><span class="type-label-sm" style="color:var(--color-neutral)">Código de convite</span><br><span class="code type-label-lg">${t.code}</span></span>
+        <button class="button button-compact type-label-md" type="button" data-copy="${t.code}"><i class="ph ph-copy" aria-hidden="true"></i>Copiar</button></div>` : ''}
+    </div>
+  </section>
+
+  ${!canEdit ? `<div class="alert alert-info type-body-sm" role="status" style="margin-top:var(--spacing-lg)"><i class="ph-fill ph-eye" aria-hidden="true"></i>
+    <p><strong>Você está como visualizador(a).</strong> Pode ver o roteiro, o orçamento e as despesas, mas só a pessoa dona da viagem ou quem edita pode alterar.</p></div>` : ''}
+
+  <div class="tabs" role="tablist" aria-label="Seções da viagem">
+    ${tabs.map(([k, l, ic, c]) => `<button class="tab type-label-lg" role="tab" type="button" id="tab-${k}" aria-controls="panel" aria-selected="${tab === k}" data-tab="${k}">
+      <i class="${tab === k ? 'ph-fill' : 'ph'} ph-${ic}" aria-hidden="true"></i>${l}${c !== undefined ? `<span class="count type-label-sm">${c}</span>` : ''}</button>`).join('')}
+  </div>
+
+  <section id="panel" role="tabpanel" aria-labelledby="tab-${tab}">
+    ${{ roteiro: itinerary, orcamento: budget, despesas: expenses, membros: members }[tab](t, role)}
+  </section>
+  </div>`;
+}
+
+function emptyState(icon, title, text, action) {
+  return `<div class="card empty"><i class="ph ph-${icon}" aria-hidden="true"></i>
+    <h2 class="type-headline-sm card-title">${title}</h2><p class="type-body-md muted">${text}</p>
+    ${action ? `<button class="button button-primary type-label-lg can-edit" type="button"><i class="ph ph-plus" aria-hidden="true"></i>${action}</button>` : ''}</div>`;
+}
+
+function budgetSummaryCard(t) {
+  if (!t.budget) return emptyState('wallet', 'Sem orçamento', 'Defina quanto o grupo pretende gastar para acompanhar o planejado.', 'Definir orçamento');
+  const planned = sum(Object.values(t.plannedByCategory));
+  const spent = sum(t.expenses.map((e) => e.amount));
+  const pct = Math.min(100, Math.round((planned / t.budget) * 100));
+  return `<div class="card">
+    <div class="section-head" style="margin-bottom:var(--spacing-sm-plus)"><h2 class="type-headline-sm card-title">Orçamento</h2><i class="ph ph-wallet icon-accent" aria-hidden="true"></i></div>
+    <p class="type-numeric-lg">${money(t.budget - planned)}</p>
+    <p class="type-body-sm muted">livres depois do planejado</p>
+    <div class="progress-track" style="margin:var(--spacing-md) 0 var(--spacing-sm)" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100" aria-label="Planejado em relação ao orçamento"><div class="progress-fill" style="width:${pct}%"></div></div>
+    <p class="type-body-sm muted">${money(planned)} planejados de ${money(t.budget)} · ${pct} %</p>
+    <hr class="divider" style="margin:var(--spacing-md) 0">
+    <div class="budget-mini"><div class="row"><span class="type-body-sm">Já gasto</span><span class="type-numeric-md">${money(spent)}</span></div></div>
+  </div>`;
+}
+
+function membersCard(t) {
+  return `<div class="card">
+    <div class="section-head" style="margin-bottom:var(--spacing-sm)"><h2 class="type-headline-sm card-title">Grupo</h2><span class="type-label-md muted">${t.members.length} pessoas</span></div>
+    <ul class="list">${t.members.map(([p, r]) => `<li><span class="avatar sm type-label-md">${PEOPLE[p].initials}</span>
+      <span class="grow type-body-md">${PEOPLE[p].name}${p === ME ? ' <span class="muted">(você)</span>' : ''}</span>
+      <span class="type-label-md muted" title="${ROLE[r].label}"><i class="ph ph-${ROLE[r].icon}" aria-hidden="true"></i><span class="sr-only">${ROLE[r].label}</span></span></li>`).join('')}</ul>
+  </div>`;
+}
+
+function itinerary(t) {
+  if (!t.stops.length) return `<div class="two-col"><div>${emptyState('map-trifold', 'Nenhum destino ainda', 'Comece pelo primeiro destino. Depois o grupo adiciona as atividades de cada dia.', 'Adicionar destino')}</div><div class="stack">${budgetSummaryCard(t)}${membersCard(t)}</div></div>`;
+  return `<div class="two-col">
+    <div class="stack">
+      <div class="section-head" style="margin:0"><h2 class="type-headline-md card-title">Roteiro</h2>
+        <button class="button button-secondary type-label-lg can-edit" type="button"><i class="ph ph-plus" aria-hidden="true"></i>Adicionar destino</button></div>
+      ${t.stops.map((s, i) => `<article class="stop">
+        <span class="stop-num type-title-md" aria-hidden="true">${i + 1}</span>
+        <div class="card">
+          <div class="stop-head">
+            <div><h3 class="type-headline-sm card-title"><span class="sr-only">Parada ${i + 1}: </span>${s.city}</h3>
+              <p class="type-body-sm muted">${s.country} · ${fmtDay(s.from)} – ${fmtDay(s.to)} · ${nights(s.from, s.to)} noites</p></div>
+            <button class="button button-compact type-label-md can-edit" type="button"><i class="ph ph-plus" aria-hidden="true"></i>Atividade</button>
+          </div>
+          ${s.activities.length ? `<ul class="activities">${s.activities.map((a) => `<li class="card-compact activity">
+            <span class="time type-numeric-md">${fmtDay(a.day, { day: '2-digit', month: '2-digit' })}<br><span class="type-body-sm">${a.time}</span></span>
+            <span class="cat-icon" title="${CATEGORIES[a.type].label}"><i class="ph ph-${CATEGORIES[a.type].icon}" aria-hidden="true"></i></span>
+            <span><span class="type-title-md">${esc(a.name)}</span><br><span class="type-body-sm muted">${CATEGORIES[a.type].label}</span></span>
+            <span class="right">${a.cost === null ? '<span class="chip static type-label-md">Sem custo</span>' : `<span class="type-numeric-md">${money(a.cost)}</span><span class="type-body-sm muted">previsto</span>`}</span>
+          </li>`).join('')}</ul>`
+          : `<div class="alert alert-info type-body-sm"><i class="ph-fill ph-info" aria-hidden="true"></i><p>Ainda não há atividades em ${s.city}.</p></div>`}
+        </div>
+      </article>`).join('')}
+    </div>
+    <div class="stack">${budgetSummaryCard(t)}${membersCard(t)}</div>
+  </div>`;
+}
+
+function budget(t) {
+  if (!t.budget) return emptyState('wallet', 'Defina o orçamento da viagem', 'Com um valor total, o ViajaJunto mostra o planejado por categoria e quanto ainda sobra.', 'Definir orçamento');
+  const planned = sum(Object.values(t.plannedByCategory));
+  const spent = sum(t.expenses.map((e) => e.amount));
+  const kpis = [['Orçamento total', t.budget, 'wallet'], ['Planejado', planned, 'list-checks'], ['Já gasto', spent, 'receipt'], ['Saldo', t.budget - spent, 'coins']];
+  const max = Math.max(...Object.values(t.plannedByCategory), 1);
+  return `
+  <div class="kpis">${kpis.map(([l, v, ic]) => `<div class="card kpi"><span class="type-label-sm muted"><i class="ph ph-${ic}" aria-hidden="true"></i> ${l}</span><span class="type-numeric-lg">${money(v)}</span></div>`).join('')}</div>
+  <div class="two-col">
+    <div class="card">
+      <div class="section-head"><h2 class="type-headline-sm card-title">Planejado por categoria</h2>
+        <button class="button button-compact type-label-md can-edit" type="button"><i class="ph ph-pencil-simple" aria-hidden="true"></i>Editar orçamento</button></div>
+      <div class="cat-rows">${Object.entries(CATEGORIES).map(([k, c]) => {
+        const v = t.plannedByCategory[k] || 0; const share = planned ? Math.round((v / planned) * 100) : 0;
+        return `<div class="cat-row"><div class="row"><span class="label type-label-md"><i class="ph ph-${c.icon} icon-accent" aria-hidden="true"></i>${c.label}</span>
+          <span><span class="type-numeric-md">${money(v)}</span> <span class="type-body-sm muted">· ${share} %</span></span></div>
+          <div class="progress-track" role="progressbar" aria-valuenow="${share}" aria-valuemin="0" aria-valuemax="100" aria-label="${c.label}"><div class="progress-fill" style="width:${Math.round((v / max) * 100)}%"></div></div></div>`;
+      }).join('')}</div>
+    </div>
+    <div class="stack">
+      ${planned <= t.budget
+        ? `<div class="alert alert-success type-body-sm"><i class="ph-fill ph-check-circle" aria-hidden="true"></i><p><strong>Dentro do orçamento.</strong> Sobram ${money(t.budget - planned)} além do que já está planejado.</p></div>`
+        : `<div class="alert alert-warning type-body-sm"><i class="ph-fill ph-warning" aria-hidden="true"></i><p><strong>Planejado acima do orçamento</strong> em ${money(planned - t.budget)}.</p></div>`}
+      ${t.unpriced ? `<div class="alert alert-warning type-body-sm"><i class="ph-fill ph-warning" aria-hidden="true"></i><p><strong>${t.unpriced} ${t.unpriced === 1 ? 'atividade sem custo previsto' : 'atividades sem custo previsto'}.</strong> Elas contam como R$ 0,00 no planejado.</p></div>` : ''}
+    </div>
+  </div>`;
+}
+
+function balances(t) {
+  const n = t.members.length; const each = sum(t.expenses.map((e) => e.amount)) / n;
+  const bal = Object.fromEntries(t.members.map(([p]) => [p, -each]));
+  t.expenses.forEach((e) => { bal[e.payer] += e.amount; });
+  const debtors = Object.entries(bal).filter(([, v]) => v < -0.005).map(([p, v]) => [p, -v]);
+  const creditors = Object.entries(bal).filter(([, v]) => v > 0.005);
+  const out = [];
+  for (const [dp, dv] of debtors.sort((a, b) => b[1] - a[1])) {
+    let left = dv;
+    for (const c of creditors) { if (left < 0.005) break; const pay = Math.min(left, c[1]); if (pay < 0.005) continue; out.push([dp, c[0], Math.round(pay * 100) / 100]); c[1] -= pay; left -= pay; }
+  }
+  return out;
+}
+
+function expenses(t) {
+  if (!t.expenses.length) return emptyState('receipt', 'Nenhuma despesa ainda', 'Registre o que alguém já pagou e o ViajaJunto calcula quem deve a quem.', 'Adicionar despesa');
+  const total = sum(t.expenses.map((e) => e.amount));
+  return `<div class="two-col">
+    <div class="card">
+      <div class="section-head"><div><h2 class="type-headline-sm card-title">Despesas</h2><p class="type-body-sm muted">${t.expenses.length} registros · ${money(total)} no total · divididas igualmente</p></div>
+        <button class="button button-primary type-label-lg can-edit" type="button"><i class="ph ph-plus" aria-hidden="true"></i>Adicionar despesa</button></div>
+      <ul class="list">${[...t.expenses].sort((a, b) => b.date.localeCompare(a.date)).map((e) => `<li>
+        <span class="cat-icon" title="${CATEGORIES[e.type].label}"><i class="ph ph-${CATEGORIES[e.type].icon}" aria-hidden="true"></i></span>
+        <span class="grow"><span class="type-title-md">${esc(e.desc)}</span><br><span class="type-body-sm muted">${PEOPLE[e.payer].name.split(' ')[0]} pagou · ${fmtDay(e.date)}</span></span>
+        <span class="money type-numeric-md">${money(e.amount)}</span></li>`).join('')}</ul>
+    </div>
+    <div class="card">
+      <div class="section-head"><h2 class="type-headline-sm card-title">Quem deve a quem</h2><i class="ph ph-arrows-left-right icon-accent" aria-hidden="true"></i></div>
+      <ul class="list">${balances(t).map(([from, to, v]) => `<li class="transfer">
+        <span class="avatar sm type-label-md">${PEOPLE[from].initials}</span><span class="type-body-md grow">${PEOPLE[from].name.split(' ')[0]} paga ${PEOPLE[to].name.split(' ')[0]}${to === ME ? ' <span class="muted">(você)</span>' : ''}</span>
+        <span class="type-numeric-md">${money(v)}</span></li>`).join('')}</ul>
+      <button class="button button-secondary type-label-lg can-edit" type="button" style="width:100%;margin-top:var(--spacing-md)"><i class="ph ph-check" aria-hidden="true"></i>Registrar pagamento</button>
+    </div>
+  </div>`;
+}
+
+function members(t, role) {
+  return `<div class="two-col"><div class="card">
+    <div class="section-head"><h2 class="type-headline-sm card-title">Membros da viagem</h2>
+      ${role === 'OWNER' ? `<button class="button button-primary type-label-lg" type="button"><i class="ph ph-user-plus" aria-hidden="true"></i>Convidar</button>` : ''}</div>
+    <ul class="list">${t.members.map(([p, r]) => `<li><span class="avatar type-label-md">${PEOPLE[p].initials}</span>
+      <span class="grow"><span class="type-title-md">${PEOPLE[p].name}${p === ME ? ' <span class="muted type-body-sm">(você)</span>' : ''}</span><br>
+      <span class="type-body-sm muted">${{ OWNER: 'Gerencia a viagem e o grupo', EDITOR: 'Edita roteiro, orçamento e despesas', VIEWER: 'Somente leitura' }[r]}</span></span>
+      ${role === 'OWNER' && r !== 'OWNER'
+        ? `<label class="sr-only" for="perm-${p}">Permissão de ${PEOPLE[p].name}</label><select class="select type-body-sm" id="perm-${p}"><option ${r === 'EDITOR' ? 'selected' : ''}>Editor(a)</option><option ${r === 'VIEWER' ? 'selected' : ''}>Visualizador(a)</option></select>
+           <button class="icon-button" type="button" aria-label="Remover ${PEOPLE[p].name}" style="color:var(--color-on-surface-variant)"><i class="ph ph-trash" aria-hidden="true"></i></button>`
+        : `<span class="chip static type-label-md"><i class="ph ph-${ROLE[r].icon}" aria-hidden="true"></i>${ROLE[r].label}</span>`}
+    </li>`).join('')}</ul>
+  </div>
+  <div class="stack">
+    ${role === 'OWNER' ? `<div class="alert alert-info type-body-sm"><i class="ph-fill ph-info" aria-hidden="true"></i><p>Compartilhe o código <strong>${t.code}</strong>. Quem entrar começa como visualizador(a), e você pode mudar a permissão aqui.</p></div>`
+      : `<div class="alert alert-info type-body-sm"><i class="ph-fill ph-lock-simple" aria-hidden="true"></i><p>Só a pessoa dona da viagem convida e muda permissões.</p></div>`}
+  </div></div>`;
+}
+
+/* ---------- Roteamento e eventos ---------- */
+const app = document.getElementById('app');
+function route() {
+  const m = location.hash.match(/^#\/viagem\/([\w-]+)/);
+  const trip = m && TRIPS.find((t) => t.id === m[1]);
+  document.body.classList.toggle('discovery', !trip);
+  app.innerHTML = trip ? renderTrip(trip) : renderDashboard();
+  document.title = `${trip ? trip.name : 'Minhas viagens'} · ViajaJunto`;
+}
+window.addEventListener('hashchange', () => { tab = 'roteiro'; route(); app.focus({ preventScroll: true }); window.scrollTo(0, 0); });
+app.addEventListener('click', (ev) => {
+  const sc = ev.target.closest('[data-scroll]'); if (sc) { const tr = document.getElementById('track-' + sc.dataset.scroll); tr.scrollBy({ left: Number(sc.dataset.dir) * tr.clientWidth * 0.8, behavior: 'smooth' }); return; }
+  const fav = ev.target.closest('.favorite-button'); if (fav) { const on = fav.getAttribute('aria-pressed') !== 'true'; fav.setAttribute('aria-pressed', on); fav.innerHTML = `<i class="${on ? 'ph-fill' : 'ph'} ph-heart" aria-hidden="true"></i>`; return; }
+  const tb = ev.target.closest('[data-tab]'); if (tb) { tab = tb.dataset.tab; route(); document.getElementById('tab-' + tab).focus(); return; }
+  const cp = ev.target.closest('[data-copy]'); if (cp) { navigator.clipboard?.writeText(cp.dataset.copy); cp.innerHTML = '<i class="ph ph-check" aria-hidden="true"></i>Copiado'; }
+});
+app.addEventListener('keydown', (ev) => {
+  const tb = ev.target.closest('[role="tab"]'); if (!tb || !['ArrowLeft', 'ArrowRight'].includes(ev.key)) return;
+  const all = [...app.querySelectorAll('[role="tab"]')]; const i = all.indexOf(tb) + (ev.key === 'ArrowRight' ? 1 : -1);
+  tab = all[(i + all.length) % all.length].dataset.tab; route(); document.getElementById('tab-' + tab).focus();
+});
+// Setas do carrossel: some a "anterior" no início e a "próxima" no fim.
+app.addEventListener('scroll', (ev) => {
+  const tr = ev.target; if (!tr.classList || !tr.classList.contains('track')) return;
+  const box = tr.parentElement;
+  box.querySelector('.prev').hidden = tr.scrollLeft < 8;
+  box.querySelector('.next').hidden = tr.scrollLeft + tr.clientWidth > tr.scrollWidth - 8;
+}, true);
+route();
+</script>
+</body>
+</html>
