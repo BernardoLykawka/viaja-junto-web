@@ -6,6 +6,8 @@ import { Painel } from './pages/Painel';
 import { Viagem } from './pages/Viagem';
 import { Descobrir } from './pages/Descobrir';
 import { Perfil } from './pages/Perfil';
+import { Destino } from './pages/Destino';
+import { Convite } from './pages/Convite';
 
 function Protected({ children }: { children: React.ReactNode }) {
   const { status } = useAuth();
@@ -30,6 +32,8 @@ export function App() {
         <Route path="/viagens/:id" element={<Viagem />} />
         <Route path="/descobrir" element={<Descobrir />} />
         <Route path="/perfil" element={<Perfil />} />
+        <Route path="/destinos/:id" element={<Destino />} />
+        <Route path="/convite/:id" element={<Convite />} />
       </Route>
       <Route path="*" element={<Navigate to="/viagens" replace />} />
     </Routes>

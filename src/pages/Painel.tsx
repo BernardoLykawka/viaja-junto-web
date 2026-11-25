@@ -141,7 +141,7 @@ export function Painel() {
             <Carousel label="Destinos mais bem avaliados" wide>
               {top.data.map((p) => (
                 <li key={p.id} style={{ display: 'contents' }}>
-                  <PhotoCard to={`/descobrir?q=${encodeURIComponent(p.name)}`} photoUrl={p.photoUrl} alt={`Foto de ${p.name}`} title={p.name} subtitle={[p.city, p.country].filter(Boolean).join(', ')} corner={<RatingPill value={p.averageRating} />} />
+                  <PhotoCard to={`/destinos/${p.id}`} photoUrl={p.photoUrl} alt={`Foto de ${p.name}`} title={p.name} subtitle={[p.city, p.country].filter(Boolean).join(', ')} corner={<RatingPill value={p.averageRating} />} />
                 </li>
               ))}
             </Carousel>

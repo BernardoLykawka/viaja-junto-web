@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api } from './api';
-import { ROLE_TO_API, toActivity, toBudget, toDestination, toMember, toPage, toPlace, toTrip, toUser } from './adapters';
-import type { Role } from './types';
+import { ROLE_TO_API, STATUS_TO_API, toActivity, toBudget, toCatalogActivity, toDestination, toMember, toPage, toPlace, toReview, toTrip, toUser } from './adapters';
+import type { Role, TripStatus } from './types';
 
 export const useMe = () => useQuery({ queryKey: ['me'], queryFn: async () => toUser(await api('/users/me')) });
 
@@ -88,5 +88,67 @@ export function useCreateTrip() {
   return useMutation({
     mutationFn: async (body: object) => toTrip(await api('/trips', { method: 'POST', body })),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['trips'] }),
+  });
+}
+
+export const usePlace = (id: number) =>
+  useQuery({ queryKey: ['place', id], queryFn: async () => toPlace(await api(`/places/${id}`, { anonymous: true })) });
+
+export const usePlaceReviews = (id: number) =>
+  useQuery({
+    queryKey: ['reviews', id],
+    queryFn: async () => toPage(await api(`/places/${id}/reviews`, { anonymous: true, query: { limit: 50 } }), toReview),
+  });
+
+/** Catálogo de atividades (público). Sem filtro por cidade na API: o filtro é feito aqui. */
+export const useCatalogActivities = () =>
+  useQuery({
+    queryKey: ['activity-catalog'],
+    staleTime: 5 * 60_000,
+    queryFn: async () => toPage(await api('/activities/catalog', { anonymous: true, query: { size: 100 } }), toCatalogActivity).data,
+  });
+
+export function useCreateReview(placeId: number) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (body: { nota: number; comentario: string | null }) => api(`/places/${placeId}/reviews`, { method: 'POST', body }),
+    onSuccess: () =>
+      Promise.all([qc.invalidateQueries({ queryKey: ['reviews', placeId] }), qc.invalidateQueries({ queryKey: ['place', placeId] }), qc.invalidateQueries({ queryKey: ['places'] })]),
+  });
+}
+
+export interface TripUpdate {
+  name: string;
+  description: string | null;
+  startDate: string | null;
+  endDate: string | null;
+  status: TripStatus;
+}
+
+export function useUpdateTrip(tripId: number) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (t: TripUpdate) =>
+      toTrip(await api(`/trips/${tripId}`, { method: 'PUT', body: { nome: t.name, descricao: t.description, dataInicio: t.startDate, dataFim: t.endDate, status: STATUS_TO_API[t.status] } })),
+    onSuccess: (trip) => {
+      qc.setQueryData(['trip', tripId], trip);
+      return qc.invalidateQueries({ queryKey: ['trips'] });
+    },
+  });
+}
+
+export function useJoinTrip() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ tripId, code }: { tripId: number; code: string }) => api(`/trips/${tripId}/members/join`, { method: 'POST', body: { codigoConvite: code } }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['trips'] }),
+  });
+}
+
+export function useUpdateMe() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (name: string) => toUser(await api('/users/me', { method: 'PATCH', body: { nome: name } })),
+    onSuccess: (me) => qc.setQueryData(['me'], me),
   });
 }

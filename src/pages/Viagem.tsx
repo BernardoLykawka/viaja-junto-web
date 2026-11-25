@@ -1,6 +1,6 @@
 import { useRef, useState, type KeyboardEvent } from 'react';
 import { Link, Navigate, useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import { ArrowLeft, CalendarBlank, Check, Copy, Receipt, Trash, UsersThree, Wallet, MapTrifold } from '@phosphor-icons/react';
+import { ArrowLeft, CalendarBlank, Check, LinkSimple, PencilSimple, Receipt, Trash, UsersThree, Wallet, MapTrifold } from '@phosphor-icons/react';
 import { errorMessage, ApiError } from '../lib/api';
 import { dateRange } from '../lib/format';
 import { useMe, useTrip, useTripMutations } from '../lib/queries';
@@ -8,6 +8,8 @@ import { Alert, AvatarStack, Button, EmptyState, Skeleton, StatusBadge } from '.
 import { Roteiro } from '../components/Roteiro';
 import { OrcamentoTab } from '../components/OrcamentoTab';
 import { MembrosTab, ROLE_META } from '../components/MembrosTab';
+import { EditarViagemDialog } from '../components/EditarViagemDialog';
+import { inviteLink } from '../lib/invite';
 
 const TABS = [
   { id: 'roteiro', label: 'Roteiro', icon: MapTrifold },
@@ -26,6 +28,7 @@ export function Viagem() {
   const { data: trip, isLoading, error } = useTrip(tripId);
   const mut = useTripMutations(tripId);
   const [copied, setCopied] = useState(false);
+  const [editing, setEditing] = useState(false);
   const tabRefs = useRef<Record<string, HTMLButtonElement | null>>({});
 
   if (!Number.isFinite(tripId)) return <Navigate to="/viagens" replace />;
@@ -60,7 +63,7 @@ export function Viagem() {
   async function copyCode() {
     if (!trip?.inviteCode) return;
     try {
-      await navigator.clipboard.writeText(trip.inviteCode);
+      await navigator.clipboard.writeText(inviteLink(trip.id, trip.inviteCode));
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
@@ -83,13 +86,21 @@ export function Viagem() {
           {trip.description && <p className="type-body-md" style={{ marginTop: 'var(--spacing-sm-plus)', color: 'var(--color-neutral)' }}>{trip.description}</p>}
         </div>
         <div className="hero-side">
-          <AvatarStack names={trip.members.map((m) => m.user.name)} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-sm-plus)' }}>
+            <AvatarStack names={trip.members.map((m) => m.user.name)} />
+            {canEdit && (
+              <button type="button" className="button-pill button-pill-light type-label-md" onClick={() => setEditing(true)}>
+                <PencilSimple size={20} aria-hidden /> Editar
+              </button>
+            )}
+          </div>
           {trip.myRole === 'OWNER' && trip.inviteCode && (
             <div className="code-box">
               <div><span className="type-label-sm" style={{ display: 'block' }}>Código de convite</span><span className="code">{trip.inviteCode}</span></div>
-              <button type="button" className="icon-button" aria-label={copied ? 'Código copiado' : 'Copiar código de convite'} onClick={copyCode} style={{ color: 'var(--color-on-primary)' }}>
-                {copied ? <Check size={20} aria-hidden /> : <Copy size={20} aria-hidden />}
+              <button type="button" className="icon-button" aria-label={copied ? 'Link de convite copiado' : 'Copiar link de convite'} title="Copiar link de convite" onClick={copyCode} style={{ color: 'var(--color-on-primary)' }}>
+                {copied ? <Check size={20} aria-hidden /> : <LinkSimple size={20} aria-hidden />}
               </button>
+              <span className="sr-only" role="status">{copied ? 'Link de convite copiado' : ''}</span>
             </div>
           )}
         </div>
@@ -115,6 +126,8 @@ export function Viagem() {
           </section>
         )}
       </div>
+
+      <EditarViagemDialog trip={trip} open={editing} onClose={() => setEditing(false)} />
 
       {trip.myRole === 'OWNER' && (
         <div style={{ marginTop: 'var(--spacing-3xl)', display: 'flex', justifyContent: 'flex-end' }}>

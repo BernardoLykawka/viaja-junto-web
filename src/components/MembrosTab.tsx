@@ -3,6 +3,7 @@ import { errorMessage } from '../lib/api';
 import { useMembers, useTripMutations } from '../lib/queries';
 import type { Role, Trip } from '../lib/types';
 import { Alert, Avatar, Button, Skeleton } from './ui';
+import { inviteLink } from '../lib/invite';
 
 export const ROLE_META: Record<Role, { label: string; icon: typeof Crown }> = {
   OWNER: { label: 'Dono(a)', icon: Crown },
@@ -52,7 +53,7 @@ export function MembrosTab({ trip, meId }: { trip: Trip; meId: number | undefine
         </div>
       )}
       {isOwner && trip.inviteCode && (
-        <Alert kind="info">Para convidar alguém, compartilhe o código de convite <strong className="type-numeric-md">{trip.inviteCode}</strong> (veja no topo da viagem).</Alert>
+        <Alert kind="info">Para convidar alguém, envie o link de convite: <strong className="type-numeric-md" style={{ wordBreak: 'break-all' }}>{inviteLink(trip.id, trip.inviteCode)}</strong>. Quem abrir o link entra como editor(a); depois você pode mudar a permissão aqui.</Alert>
       )}
     </section>
   );

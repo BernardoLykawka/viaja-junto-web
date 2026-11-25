@@ -82,3 +82,25 @@ export interface Page<T> {
   data: T[];
   totalItems: number;
 }
+
+export interface Review {
+  id: string;
+  author: User;
+  rating: number;
+  comment: string | null;
+  createdAt: string;
+}
+
+export interface CatalogActivity {
+  id: number;
+  name: string;
+  type: string | null;
+  location: string | null;
+  city: string | null;
+  country: string | null;
+  description: string | null;
+  photoUrl: string | null;
+  averagePrice: number | null;
+  averageRating: number | null;
+  reviewCount: number;
+}

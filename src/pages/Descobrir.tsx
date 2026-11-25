@@ -34,7 +34,7 @@ export function Descobrir() {
         {isLoading && Array.from({ length: 8 }, (_, i) => <li key={i}><Skeleton style={{ height: 260, borderRadius: 'var(--radius-lg)' }} /></li>)}
         {data?.data.map((p) => (
           <li key={p.id}>
-            <PhotoCard to={`/descobrir?q=${encodeURIComponent(p.name)}`} photoUrl={p.photoUrl} alt={`Foto de ${p.name}`} title={p.name} subtitle={[p.city, p.country].filter(Boolean).join(', ')} corner={<RatingPill value={p.averageRating} />} />
+            <PhotoCard to={`/destinos/${p.id}`} photoUrl={p.photoUrl} alt={`Foto de ${p.name}`} title={p.name} subtitle={[p.city, p.country].filter(Boolean).join(', ')} corner={<RatingPill value={p.averageRating} />} />
           </li>
         ))}
       </ul>

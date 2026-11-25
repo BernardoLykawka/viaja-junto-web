@@ -326,3 +326,14 @@ body.discovery .app-bar { position: absolute; left: 0; right: 0; background: tra
 .track > li { display: contents; }
 @media (min-width: 640px) { .search-bar { grid-template-columns: repeat(3, 1fr) auto; } }
 @media (max-width: 639px) { .search-field:nth-child(3) { border-bottom: 0; } }
+.place-hero { position: relative; height: 320px; border-radius: var(--radius-xl); overflow: hidden; background: var(--color-neutral); }
+.place-hero img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.place-hero::after { content: ""; position: absolute; inset: 35% 0 0; background: linear-gradient(to top, var(--color-photo-scrim), transparent); }
+.place-hero-caption { position: absolute; left: 0; right: 0; bottom: 0; z-index: 1; padding: var(--spacing-xl); color: var(--color-on-tertiary); display: grid; gap: var(--spacing-xs); }
+.place-rating { display: inline-flex; align-items: center; gap: var(--spacing-xs); }
+.stars { display: inline-flex; gap: 2px; color: var(--color-primary); }
+.star-picker { display: flex; gap: var(--spacing-xs); }
+.star-option { width: 44px; height: 44px; display: grid; place-items: center; border-radius: var(--radius-full); color: var(--color-primary); cursor: pointer; }
+.star-option:hover { background: var(--color-success-container); }
+.star-option:has(input:focus-visible) { outline: 3px solid var(--color-primary); outline-offset: 2px; }
+@media (max-width: 639px) { .place-hero { height: 240px; border-radius: var(--radius-lg); } .place-hero-caption { padding: var(--spacing-lg); } .place-hero-caption h1 { font-size: var(--text-headline-lg); } }

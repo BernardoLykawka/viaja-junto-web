@@ -2,7 +2,7 @@ import { useState, type FormEvent } from 'react';
 import { Bed, Bus, DotsThree, ForkKnife, MapPin, MapTrifold, Plus, Ticket, Trash, type Icon } from '@phosphor-icons/react';
 import { errorMessage, fieldErrors } from '../lib/api';
 import { dateRange, dayHeading, money, timeOf } from '../lib/format';
-import { useTripActivities, useTripDestinations, useTripMutations } from '../lib/queries';
+import { useCatalogActivities, useTripActivities, useTripDestinations, useTripMutations } from '../lib/queries';
 import type { Activity, Trip, TripDestination } from '../lib/types';
 import { Alert, Button, Dialog, EmptyState, Field, Skeleton } from './ui';
 
@@ -136,15 +136,42 @@ const TYPES = ['Passeio', 'Comida', 'Hospedagem', 'Transporte', 'Outros'];
 
 function ActivityDialog({ tripId, destination, onClose }: { tripId: number; destination: TripDestination | null; onClose: () => void }) {
   const { addActivity } = useTripMutations(tripId);
-  const blank = { nome: '', tipo: TYPES[0]!, dataHorario: '', custoPrevisto: '' };
+  const catalog = useCatalogActivities();
+  const blank = { catalogoAtividadeId: '', nome: '', tipo: TYPES[0]!, local: '', dataHorario: '', custoPrevisto: '' };
   const [f, setF] = useState(blank);
   const set = (k: keyof typeof f) => (e: { target: { value: string } }) => setF((p) => ({ ...p, [k]: e.target.value }));
   const errs = fieldErrors(addActivity.error);
+  // Sugestões do catálogo para a cidade deste destino (a API não filtra por cidade).
+  const suggestions = (catalog.data ?? []).filter((a) => destination && a.city && a.city.localeCompare(destination.name, 'pt-BR', { sensitivity: 'base' }) === 0);
+
+  function pick(id: string) {
+    const a = suggestions.find((x) => String(x.id) === id);
+    if (!a) return setF((p) => ({ ...p, catalogoAtividadeId: '' }));
+    setF((p) => ({
+      ...p,
+      catalogoAtividadeId: id,
+      nome: a.name,
+      tipo: TYPES.find((t) => t.localeCompare(a.type ?? '', 'pt-BR', { sensitivity: 'base' }) === 0) ?? 'Outros',
+      local: a.location ?? '',
+      custoPrevisto: a.averagePrice != null ? String(a.averagePrice) : p.custoPrevisto,
+    }));
+  }
+
   function submit(e: FormEvent) {
     e.preventDefault();
     if (!destination) return;
     addActivity.mutate(
-      { destinationId: destination.id, body: { nome: f.nome.trim(), tipo: f.tipo, dataHorario: f.dataHorario || null, custoPrevisto: f.custoPrevisto ? Number(f.custoPrevisto) : null } },
+      {
+        destinationId: destination.id,
+        body: {
+          catalogoAtividadeId: f.catalogoAtividadeId ? Number(f.catalogoAtividadeId) : null,
+          nome: f.nome.trim(),
+          tipo: f.tipo,
+          local: f.local.trim() || null,
+          dataHorario: f.dataHorario || null,
+          custoPrevisto: f.custoPrevisto ? Number(f.custoPrevisto) : null,
+        },
+      },
       { onSuccess: () => { setF(blank); onClose(); } },
     );
   }
@@ -152,11 +179,20 @@ function ActivityDialog({ tripId, destination, onClose }: { tripId: number; dest
     <Dialog open={!!destination} onClose={onClose} title={destination ? `Nova atividade em ${destination.name}` : 'Nova atividade'}>
       <form className="form" onSubmit={submit} noValidate>
         {addActivity.error && !Object.keys(errs).length && <Alert kind="error">{errorMessage(addActivity.error, 'editar o roteiro desta viagem')}</Alert>}
+        {suggestions.length > 0 && (
+          <Field label="Sugestões do catálogo" htmlFor="a-cat" helper="Escolha uma para preencher os campos, ou crie a sua.">
+            <select id="a-cat" value={f.catalogoAtividadeId} onChange={(e) => pick(e.target.value)}>
+              <option value="">Atividade personalizada</option>
+              {suggestions.map((a) => <option key={a.id} value={a.id}>{a.name}{a.averagePrice != null ? ` · ${money(a.averagePrice)}` : ''}</option>)}
+            </select>
+          </Field>
+        )}
         <Field label="Nome" htmlFor="a-nome" error={errs.nome}><input id="a-nome" required value={f.nome} onChange={set('nome')} /></Field>
         <div className="form-row">
           <Field label="Tipo" htmlFor="a-tipo"><select id="a-tipo" value={f.tipo} onChange={set('tipo')}>{TYPES.map((t) => <option key={t}>{t}</option>)}</select></Field>
           <Field label="Valor previsto (R$)" htmlFor="a-custo" error={errs.custoPrevisto}><input id="a-custo" type="number" inputMode="decimal" min={0} step="0.01" value={f.custoPrevisto} onChange={set('custoPrevisto')} /></Field>
         </div>
+        <Field label="Local" htmlFor="a-local" error={errs.local}><input id="a-local" value={f.local} onChange={set('local')} /></Field>
         <Field label="Data e hora" htmlFor="a-data" error={errs.dataHorario}><input id="a-data" type="datetime-local" value={f.dataHorario} onChange={set('dataHorario')} /></Field>
         <div className="form-actions">
           <Button variant="secondary" onClick={onClose}>Cancelar</Button>

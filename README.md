@@ -36,11 +36,16 @@ src/components, src/pages
 
 ## Estado atual
 
-| Tela | Situação |
-| --- | --- |
-| Login (Google) | pronto |
-| Painel "Minhas viagens" | pronto, sem sino de notificações (a API não tem essa rota) |
-| Detalhe da viagem: Roteiro, Orçamento, Membros | prontos, com modo somente leitura para VIEWER |
-| Detalhe da viagem: Despesas | aviso "em breve" (a API ainda não tem `/expenses`, `/balances`, `/settlements`) |
-| Descobrir, Perfil | básicos |
-| Entrar com código de convite | pendente: `POST /trips/{id}/members/join` exige o ID da viagem |
+| Tela | Rotas da API | Situação |
+| --- | --- | --- |
+| Login (Google) | Firebase | pronto |
+| Painel "Minhas viagens" | `GET /trips`, `/places/featured`, `/places/visited-countries`, `/trips/{id}/destinations` | pronto, sem sino (a API não tem notificações) |
+| Detalhe da viagem | `GET`/`PUT`/`DELETE /trips/{id}` | pronto, com edição de nome, datas, descrição e situação |
+| Roteiro | destinos (`GET`/`POST`/`DELETE`), atividades (`GET`/`POST`/`DELETE`), `/activities/catalog` | pronto, com sugestões do catálogo |
+| Orçamento | `GET`/`PUT /trips/{id}/budget` | pronto |
+| Membros | `GET`/`PATCH`/`DELETE /trips/{id}/members` | pronto |
+| Convite por link | `POST /trips/{id}/members/join` | pronto: `/convite/{id}?codigo=...` |
+| Descobrir e destino | `GET /places`, `/places/{id}`, `GET`/`POST /places/{id}/reviews` | pronto |
+| Perfil | `GET`/`PATCH /users/me` | pronto |
+| Despesas | — | aviso "em breve" (a API não tem `/expenses`, `/balances`, `/settlements`) |
+| Mapa da viagem | `GET /trips/{id}/map` | pendente |

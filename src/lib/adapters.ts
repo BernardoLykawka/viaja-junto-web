@@ -1,4 +1,4 @@
-import type { Activity, Budget, Member, Page, Place, Role, Trip, TripDestination, TripStatus, User } from './types';
+import type { Activity, Budget, CatalogActivity, Member, Page, Place, Review, Role, Trip, TripDestination, TripStatus, User } from './types';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 type Raw = any;
@@ -68,6 +68,28 @@ export const toBudget = (r: Raw): Budget => ({
   available: num(r.saldoDisponivel),
   percentConsumed: r.percentualConsumidoTotal ?? 0,
   byCategory: (r.gastosPorCategoria ?? []).map((c: Raw) => ({ category: c.categoria, total: num(c.valorTotal) ?? 0, percent: c.percentualConsumido ?? 0 })),
+});
+
+export const toReview = (r: Raw): Review => ({
+  id: String(r.id),
+  author: toUser(r.usuario ?? {}),
+  rating: r.nota ?? r.rating ?? 0,
+  comment: r.comentario ?? r.comment ?? null,
+  createdAt: r.dataCriacao ?? r.createdAt ?? '',
+});
+
+export const toCatalogActivity = (r: Raw): CatalogActivity => ({
+  id: r.id,
+  name: r.nome,
+  type: r.tipo ?? null,
+  location: r.localizacao ?? null,
+  city: r.cidade ?? null,
+  country: r.pais ?? null,
+  description: r.descricao ?? null,
+  photoUrl: r.fotoUrl ?? null,
+  averagePrice: num(r.precoMedio),
+  averageRating: num(r.avaliacaoMedia),
+  reviewCount: r.totalAvaliacoes ?? 0,
 });
 
 /** Aceita lista simples, o envelope `{data, meta}` do contrato e o `Page` do Spring (`content`, `totalElements`). */
