@@ -3,7 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import { ArrowLeft, MapPin, Plus, Star } from '@phosphor-icons/react';
 import { categoryIcon, isLodging, normalizeType } from '../lib/activityTypes';
 import { ApiError, errorMessage } from '../lib/api';
-import { money, rating } from '../lib/format';
+import { price, rating } from '../lib/format';
 import { useActivityReviews, useCatalogActivity, useCreateActivityReview, useMe, usePlace } from '../lib/queries';
 import { Alert, Button, Skeleton } from '../components/ui';
 import { ReviewForm, ReviewList } from '../components/Reviews';
@@ -74,7 +74,7 @@ export function Atividade() {
         <div className="stack">
           <section className="card stack-sm">
             <span className="type-label-sm muted">{lodging ? 'Preço médio por noite' : 'Preço médio'}</span>
-            <span className="type-numeric-lg">{a.averagePrice != null ? money(a.averagePrice) : 'Sem preço'}</span>
+            <span className="type-numeric-lg">{price(a.averagePrice) ?? 'Sem preço'}</span>
             {place.data && status === 'authed' && (
               <Button icon={Plus} onClick={() => setAdding(true)} style={{ marginTop: 'var(--spacing-sm)' }}>
                 {lodging ? 'Reservar na viagem' : 'Adicionar à viagem'}

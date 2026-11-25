@@ -1,5 +1,7 @@
 const brl = (currency = 'BRL') => new Intl.NumberFormat('pt-BR', { style: 'currency', currency });
 export const money = (v: number | null | undefined, currency = 'BRL') => brl(currency).format(v ?? 0);
+/** Preço de catálogo: zero quer dizer entrada gratuita. */
+export const price = (v: number | null | undefined) => (v == null ? null : v === 0 ? 'Grátis' : money(v));
 export const percent = (v: number) => `${Math.round(v)} %`;
 export const rating = (v: number | null | undefined) => (v == null ? '–' : v.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 }));
 
