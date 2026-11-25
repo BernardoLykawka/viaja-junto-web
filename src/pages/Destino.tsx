@@ -1,21 +1,25 @@
-import { useState, type FormEvent } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { ArrowLeft, ChatCircleText, MapPin, Star } from '@phosphor-icons/react';
-import { ApiError, errorMessage, fieldErrors } from '../lib/api';
-import { money, rating } from '../lib/format';
+import { ArrowLeft, Bed, Compass, MapPin, Star } from '@phosphor-icons/react';
+import { isLodging } from '../lib/activityTypes';
+import { ApiError, errorMessage } from '../lib/api';
+import { rating } from '../lib/format';
 import { useCatalogActivities, useCreateReview, useMe, usePlace, usePlaceReviews } from '../lib/queries';
-import { Alert, Avatar, Button, EmptyState, Field, Skeleton } from '../components/ui';
-import { categoryIcon } from '../components/Roteiro';
-
-const sameText = (a: string | null | undefined, b: string | null | undefined) =>
-  !!a && !!b && a.localeCompare(b, 'pt-BR', { sensitivity: 'base' }) === 0;
+import type { CatalogActivity } from '../lib/types';
+import { Alert, EmptyState, Skeleton } from '../components/ui';
+import { CatalogActivityCard } from '../components/CatalogActivityCard';
+import { ReviewForm, ReviewList } from '../components/Reviews';
+import { LoginToAct } from '../components/LoginToAct';
+import type { Icon } from '@phosphor-icons/react';
 
 export function Destino() {
   const placeId = Number(useParams().id);
   const place = usePlace(placeId);
   const reviews = usePlaceReviews(placeId);
-  const catalog = useCatalogActivities();
+  const createReview = useCreateReview(placeId);
   const me = useMe();
+  // Atividades ficam ligadas à cidade; "Bariloche" no catálogo de destinos tem cidade "San Carlos de Bariloche".
+  const byCity = useCatalogActivities(place.data?.city);
+  const byName = useCatalogActivities(place.data && place.data.name !== place.data.city ? place.data.name : null);
 
   if (place.isLoading) return <div className="container page-work"><Skeleton style={{ height: 320, borderRadius: 'var(--radius-xl)' }} /></div>;
   if (place.error || !place.data) {
@@ -28,7 +32,10 @@ export function Destino() {
   }
 
   const p = place.data;
-  const activities = (catalog.data ?? []).filter((a) => sameText(a.city, p.city) || sameText(a.city, p.name));
+  const all = [...(byCity.data ?? []), ...(byName.data ?? [])].filter((a, i, arr) => arr.findIndex((x) => x.id === a.id) === i);
+  const loadingActivities = byCity.isLoading || byName.isLoading;
+  const todo = all.filter((a) => !isLodging(a.type));
+  const stays = all.filter((a) => isLodging(a.type));
   const myReview = reviews.data?.data.find((r) => r.author.id === me.data?.id);
 
   return (
@@ -46,120 +53,39 @@ export function Destino() {
         </div>
       </header>
 
-      <div className="two-col" style={{ marginTop: 'var(--spacing-xl)' }}>
-        <div className="stack">
-          {p.description && (
-            <section className="card">
-              <h2 className="type-headline-sm card-title" style={{ marginBottom: 'var(--spacing-sm)' }}>Sobre</h2>
-              <p className="type-body-md">{p.description}</p>
-            </section>
-          )}
+      {p.description && <p className="type-body-lg" style={{ marginTop: 'var(--spacing-lg)', maxWidth: '70ch' }}>{p.description}</p>}
 
-          <section className="card" aria-labelledby="aval-h">
-            <h2 id="aval-h" className="type-headline-sm card-title" style={{ marginBottom: 'var(--spacing-md)' }}>Avaliações</h2>
-            {reviews.isLoading && <Skeleton style={{ height: 120 }} />}
-            {reviews.error && <Alert kind="error">{errorMessage(reviews.error)}</Alert>}
-            {reviews.data && reviews.data.data.length === 0 && <EmptyState icon={ChatCircleText} text="Ninguém avaliou este destino ainda. Seja a primeira pessoa!" />}
-            <ul className="list">
-              {reviews.data?.data.map((r) => (
-                <li key={r.id} style={{ alignItems: 'flex-start' }}>
-                  <Avatar name={r.author.name} />
-                  <div className="grow stack-sm">
-                    <div style={{ display: 'flex', justifyContent: 'space-between', gap: 'var(--spacing-sm)', flexWrap: 'wrap' }}>
-                      <p className="type-title-md">{r.author.name}</p>
-                      <Stars value={r.rating} />
-                    </div>
-                    {r.comment && <p className="type-body-md">{r.comment}</p>}
-                    {r.createdAt && <p className="type-body-sm muted">{new Date(r.createdAt).toLocaleDateString('pt-BR', { day: 'numeric', month: 'short', year: 'numeric' })}</p>}
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </section>
-        </div>
+      <ActivityGrid id="o-que-fazer" title="O que fazer" icon={Compass} items={todo} placeId={p.id} loading={loadingActivities}
+        empty={`Ainda não há passeios cadastrados em ${p.name}.`} error={byCity.error ?? byName.error} />
+      <ActivityGrid id="onde-ficar" title="Onde ficar" icon={Bed} items={stays} placeId={p.id} loading={loadingActivities}
+        empty={`Ainda não há hospedagens cadastradas em ${p.name}.`} />
 
-        <div className="stack">
-          {myReview ? (
-            <Alert kind="success">Você já avaliou este destino com {myReview.rating} {myReview.rating === 1 ? 'estrela' : 'estrelas'}.</Alert>
-          ) : (
-            <ReviewForm placeId={placeId} />
-          )}
-
-          <section className="card" aria-labelledby="ativ-h">
-            <h2 id="ativ-h" className="type-headline-sm card-title" style={{ marginBottom: 'var(--spacing-md)' }}>O que fazer</h2>
-            {catalog.isLoading ? <Skeleton style={{ height: 120 }} /> : activities.length === 0 ? (
-              <p className="type-body-sm muted">Ainda não há atividades do catálogo para este destino.</p>
-            ) : (
-              <ul className="list">
-                {activities.map((a) => {
-                  const I = categoryIcon(a.type);
-                  return (
-                    <li key={a.id}>
-                      <span className="cat-icon"><I size={20} aria-hidden /></span>
-                      <div className="grow">
-                        <p className="type-title-md">{a.name}</p>
-                        <p className="type-body-sm muted">{[a.type, a.location].filter(Boolean).join(' · ')}</p>
-                      </div>
-                      <div style={{ textAlign: 'right' }}>
-                        {a.averagePrice != null && <p className="type-numeric-md">{money(a.averagePrice)}</p>}
-                        <p className="type-body-sm muted">★ {rating(a.averageRating)}</p>
-                      </div>
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
-          </section>
-        </div>
+      <div className="two-col" style={{ marginTop: 'var(--spacing-2xl)' }}>
+        <section className="card" aria-labelledby="aval-h">
+          <h2 id="aval-h" className="type-headline-sm card-title" style={{ marginBottom: 'var(--spacing-md)' }}>Avaliações de {p.name}</h2>
+          <ReviewList query={reviews} emptyText="Ninguém avaliou este destino ainda. Seja a primeira pessoa!" />
+        </section>
+        <LoginToAct text="Entre para avaliar este destino e montar viagens com ele."><ReviewForm create={createReview} what="este destino" myRating={myReview?.rating} /></LoginToAct>
       </div>
     </div>
   );
 }
 
-function Stars({ value }: { value: number }) {
+function ActivityGrid({ id, title, icon: I, items, placeId, loading, empty, error }: { id: string; title: string; icon: Icon; items: CatalogActivity[]; placeId: number; loading: boolean; empty: string; error?: unknown }) {
   return (
-    <span className="stars" role="img" aria-label={`${value} de 5 estrelas`}>
-      {[1, 2, 3, 4, 5].map((n) => <Star key={n} size={16} weight={n <= value ? 'fill' : 'regular'} aria-hidden />)}
-    </span>
-  );
-}
-
-function ReviewForm({ placeId }: { placeId: number }) {
-  const create = useCreateReview(placeId);
-  const [nota, setNota] = useState(0);
-  const [comentario, setComentario] = useState('');
-  const errs = fieldErrors(create.error);
-
-  function submit(e: FormEvent) {
-    e.preventDefault();
-    if (!nota) return;
-    create.mutate({ nota, comentario: comentario.trim() || null }, { onSuccess: () => { setNota(0); setComentario(''); } });
-  }
-
-  return (
-    <section className="card" aria-labelledby="avaliar-h">
-      <h2 id="avaliar-h" className="type-headline-sm card-title" style={{ marginBottom: 'var(--spacing-md)' }}>Avaliar destino</h2>
-      <form className="form" onSubmit={submit} noValidate>
-        {create.error && !Object.keys(errs).length && <Alert kind="error">{errorMessage(create.error, 'avaliar este destino')}</Alert>}
-        <fieldset className="field" style={{ border: 0, padding: 0, margin: 0 }}>
-          <legend className="type-label-md" style={{ marginBottom: 'var(--spacing-xs)' }}>Sua nota</legend>
-          <div className="star-picker">
-            {[1, 2, 3, 4, 5].map((n) => (
-              <label key={n} className="star-option">
-                <input type="radio" name="nota" value={n} checked={nota === n} onChange={() => setNota(n)} className="sr-only" />
-                <Star size={28} weight={n <= nota ? 'fill' : 'regular'} aria-hidden />
-                <span className="sr-only">{n} {n === 1 ? 'estrela' : 'estrelas'}</span>
-              </label>
-            ))}
-          </div>
-          {errs.nota && <p className="type-body-sm field-error">{errs.nota}</p>}
-        </fieldset>
-        <Field label="Comentário" htmlFor="rv-coment" helper="Opcional. Até 1500 caracteres." error={errs.comentario}>
-          <textarea id="rv-coment" maxLength={1500} value={comentario} onChange={(e) => setComentario(e.target.value)} />
-        </Field>
-        {create.isSuccess && <Alert kind="success">Obrigado! Sua avaliação foi publicada.</Alert>}
-        <Button type="submit" busy={create.isPending} disabled={!nota}>Publicar avaliação</Button>
-      </form>
+    <section aria-labelledby={id} style={{ marginTop: 'var(--spacing-2xl)' }}>
+      <div className="section-row">
+        <h2 id={id} className="type-headline-sm card-title" style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--spacing-sm)' }}>
+          <I size={24} aria-hidden style={{ color: 'var(--color-primary)' }} /> {title}
+        </h2>
+      </div>
+      {error ? <Alert kind="error">{errorMessage(error)}</Alert> : loading ? (
+        <div className="grid-cards">{[0, 1, 2].map((i) => <Skeleton key={i} style={{ height: 260, borderRadius: 'var(--radius-lg)' }} />)}</div>
+      ) : items.length === 0 ? (
+        <div className="card"><EmptyState icon={I} text={empty} /></div>
+      ) : (
+        <ul className="grid-cards">{items.map((a) => <li key={a.id}><CatalogActivityCard placeId={placeId} a={a} /></li>)}</ul>
+      )}
     </section>
   );
 }

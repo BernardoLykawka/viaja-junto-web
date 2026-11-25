@@ -45,6 +45,7 @@ export interface Place {
 
 export interface TripDestination {
   id: number;
+  catalogId: number | null;
   name: string;
   country: string | null;
   photoUrl: string | null;
@@ -56,6 +57,9 @@ export interface TripDestination {
 export interface Activity {
   id: number;
   destinationId: number;
+  catalogId: number | null;
+  photoUrl: string | null;
+  description: string | null;
   name: string;
   type: string | null;
   place: string | null;

@@ -34,6 +34,13 @@ src/components, src/pages
 - O `design/AGENTS.md` fala em Next.js; neste projeto a stack é Vite (Tailwind v4 e Phosphor seguem iguais;
   as fontes vêm de `@fontsource`).
 
+## Atividades e hospedagem
+
+Cada destino tem atividades: passeios (Cristo Redentor), cultura, gastronomia, transporte e **hospedagem**. Hospedagem
+é uma atividade com `tipo = "Hospedagem"`; no roteiro ela aparece separada, como estadia: `dataHorario` é o check-in,
+`duracaoMinutos` guarda as noites (noites × 1440) e `custoPrevisto` é o total da estadia. Os tipos seguem os do backend
+(`Passeio`, `Cultura`, `Gastronomia`, `Hospedagem`, `Transporte`) e ficam em `src/lib/activityTypes.ts`.
+
 ## Estado atual
 
 | Tela | Rotas da API | Situação |
@@ -41,11 +48,12 @@ src/components, src/pages
 | Login (Google) | Firebase | pronto |
 | Painel "Minhas viagens" | `GET /trips`, `/places/featured`, `/places/visited-countries`, `/trips/{id}/destinations` | pronto, sem sino (a API não tem notificações) |
 | Detalhe da viagem | `GET`/`PUT`/`DELETE /trips/{id}` | pronto, com edição de nome, datas, descrição e situação |
-| Roteiro | destinos (`GET`/`POST`/`DELETE`), atividades (`GET`/`POST`/`DELETE`), `/activities/catalog` | pronto, com sugestões do catálogo |
+| Roteiro | destinos (`GET`/`POST`/`DELETE`), atividades (`GET`/`POST`/`DELETE`), `/activities/catalog` | pronto: por destino, hospedagem (check-in + noites) e atividades por dia |
 | Orçamento | `GET`/`PUT /trips/{id}/budget` | pronto |
 | Membros | `GET`/`PATCH`/`DELETE /trips/{id}/members` | pronto |
 | Convite por link | `POST /trips/{id}/members/join` | pronto: `/convite/{id}?codigo=...` |
-| Descobrir e destino | `GET /places`, `/places/{id}`, `GET`/`POST /places/{id}/reviews` | pronto |
+| Descobrir e destino (público) | `GET /places`, `/places/{id}`, `GET`/`POST /places/{id}/reviews`, `/activities/catalog?q={cidade}` | pronto: "O que fazer" e "Onde ficar" |
+| Atividade do catálogo (público) | `/activities/catalog/{id}`, `GET`/`POST /places/{id}/activities/{id}/reviews` | pronto, com "Adicionar à viagem" |
 | Perfil | `GET`/`PATCH /users/me` | pronto |
 | Despesas | — | aviso "em breve" (a API não tem `/expenses`, `/balances`, `/settlements`) |
 | Mapa da viagem | `GET /trips/{id}/map` | pendente |

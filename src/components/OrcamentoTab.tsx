@@ -5,7 +5,7 @@ import { money, percent } from '../lib/format';
 import { useBudget, useTripMutations } from '../lib/queries';
 import type { Trip } from '../lib/types';
 import { Alert, Button, Dialog, EmptyState, Field, Skeleton } from './ui';
-import { categoryIcon } from './Roteiro';
+import { categoryIcon } from '../lib/activityTypes';
 
 export function OrcamentoTab({ trip, canEdit }: { trip: Trip; canEdit: boolean }) {
   const { data: b, isLoading, error } = useBudget(trip.id);

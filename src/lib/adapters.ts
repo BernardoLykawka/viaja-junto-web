@@ -43,6 +43,7 @@ export const toPlace = (r: Raw): Place => ({
 
 export const toDestination = (r: Raw): TripDestination => ({
   id: r.id,
+  catalogId: r.destinoCatalogoId ?? null,
   name: r.nome,
   country: r.pais ?? null,
   photoUrl: r.fotoUrl ?? null,
@@ -54,6 +55,9 @@ export const toDestination = (r: Raw): TripDestination => ({
 export const toActivity = (r: Raw): Activity => ({
   id: r.id,
   destinationId: r.destinoViagemId,
+  catalogId: r.catalogoAtividadeId ?? null,
+  photoUrl: r.fotoUrl ?? null,
+  description: r.descricao ?? null,
   name: r.nome,
   type: r.tipo ?? null,
   place: r.local ?? null,

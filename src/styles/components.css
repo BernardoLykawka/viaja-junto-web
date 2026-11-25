@@ -337,3 +337,7 @@ body.discovery .app-bar { position: absolute; left: 0; right: 0; background: tra
 .star-option:hover { background: var(--color-success-container); }
 .star-option:has(input:focus-visible) { outline: 3px solid var(--color-primary); outline-offset: 2px; }
 @media (max-width: 639px) { .place-hero { height: 240px; border-radius: var(--radius-lg); } .place-hero-caption { padding: var(--spacing-lg); } .place-hero-caption h1 { font-size: var(--text-headline-lg); } }
+.inline-link { display: inline-flex; align-items: center; gap: var(--spacing-xs); }
+.activity.stay { grid-template-columns: 40px 1fr auto; }
+.button.login-link { height: 44px; }
+@media (max-width: 639px) { .bar-actions a.login-link { display: inline-flex !important; } }

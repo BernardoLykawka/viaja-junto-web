@@ -8,6 +8,7 @@ import { Descobrir } from './pages/Descobrir';
 import { Perfil } from './pages/Perfil';
 import { Destino } from './pages/Destino';
 import { Convite } from './pages/Convite';
+import { Atividade } from './pages/Atividade';
 
 function Protected({ children }: { children: React.ReactNode }) {
   const { status } = useAuth();
@@ -21,19 +22,16 @@ export function App() {
   return (
     <Routes>
       <Route path="/entrar" element={<Login />} />
-      <Route
-        element={
-          <Protected>
-            <Layout />
-          </Protected>
-        }
-      >
-        <Route path="/viagens" element={<Painel />} />
-        <Route path="/viagens/:id" element={<Viagem />} />
+      <Route element={<Layout />}>
+        {/* Públicas: o catálogo de destinos e atividades não exige login na API. */}
         <Route path="/descobrir" element={<Descobrir />} />
-        <Route path="/perfil" element={<Perfil />} />
         <Route path="/destinos/:id" element={<Destino />} />
-        <Route path="/convite/:id" element={<Convite />} />
+        <Route path="/destinos/:id/atividades/:activityId" element={<Atividade />} />
+        {/* Do usuário: exigem login com Google. */}
+        <Route path="/viagens" element={<Protected><Painel /></Protected>} />
+        <Route path="/viagens/:id" element={<Protected><Viagem /></Protected>} />
+        <Route path="/perfil" element={<Protected><Perfil /></Protected>} />
+        <Route path="/convite/:id" element={<Protected><Convite /></Protected>} />
       </Route>
       <Route path="*" element={<Navigate to="/viagens" replace />} />
     </Routes>

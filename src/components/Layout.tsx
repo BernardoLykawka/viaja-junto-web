@@ -29,7 +29,7 @@ function ClipPaths() {
 
 export function Layout() {
   const { pathname } = useLocation();
-  const { signOut } = useAuth();
+  const { signOut, status } = useAuth();
   const { data: me } = useMe();
   const main = useRef<HTMLElement>(null);
   const discovery = pathname === '/viagens';
@@ -69,12 +69,16 @@ export function Layout() {
             ))}
           </nav>
           <div className="bar-actions">
+            {status === 'loading' ? null : status === 'anon' ? (
+              <Link to="/entrar" state={{ from: pathname }} className="button button-secondary type-label-md login-link">Entrar</Link>
+            ) : (<>
             <Link to="/perfil" aria-label={me ? `Perfil de ${me.name}` : 'Perfil'} style={{ display: 'inline-flex' }}>
               {me ? <Avatar name={me.name} /> : <UserCircle size={40} aria-hidden />}
             </Link>
             <button type="button" className="icon-button button-circle top-signout" aria-label="Sair" onClick={() => void signOut()}>
               <SignOut size={24} aria-hidden />
             </button>
+            </>)}
           </div>
         </div>
       </header>
@@ -91,9 +95,9 @@ export function Layout() {
           <GlobeHemisphereWest size={24} aria-hidden />
           Descobrir
         </NavLink>
-        <NavLink to="/perfil" end>
+        <NavLink to={status === 'anon' ? '/entrar' : '/perfil'} end>
           <UserCircle size={24} aria-hidden />
-          Perfil
+          {status === 'anon' ? 'Entrar' : 'Perfil'}
         </NavLink>
       </nav>
     </>

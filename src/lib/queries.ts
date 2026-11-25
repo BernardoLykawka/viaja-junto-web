@@ -1,9 +1,14 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api } from './api';
+import { useAuth } from './auth';
 import { ROLE_TO_API, STATUS_TO_API, toActivity, toBudget, toCatalogActivity, toDestination, toMember, toPage, toPlace, toReview, toTrip, toUser } from './adapters';
 import type { Role, TripStatus } from './types';
+import { sameCity } from './activityTypes';
 
-export const useMe = () => useQuery({ queryKey: ['me'], queryFn: async () => toUser(await api('/users/me')) });
+export const useMe = () => {
+  const { status } = useAuth();
+  return useQuery({ queryKey: ['me'], enabled: status === 'authed', queryFn: async () => toUser(await api('/users/me')) });
+};
 
 export const useTrips = () =>
   useQuery({ queryKey: ['trips'], queryFn: async () => toPage(await api('/trips', { query: { limit: 100 } }), toTrip) });
@@ -100,13 +105,56 @@ export const usePlaceReviews = (id: number) =>
     queryFn: async () => toPage(await api(`/places/${id}/reviews`, { anonymous: true, query: { limit: 50 } }), toReview),
   });
 
-/** Catálogo de atividades (público). Sem filtro por cidade na API: o filtro é feito aqui. */
-export const useCatalogActivities = () =>
+/**
+ * Atividades do catálogo de uma cidade (público). A busca `q` da API casa nome ou cidade; o filtro exato por
+ * cidade é feito aqui para "Paris" não trazer atividades com "Paris" só no nome.
+ */
+export const useCatalogActivities = (city: string | null | undefined) =>
   useQuery({
-    queryKey: ['activity-catalog'],
+    queryKey: ['activity-catalog', city],
+    enabled: !!city,
     staleTime: 5 * 60_000,
-    queryFn: async () => toPage(await api('/activities/catalog', { anonymous: true, query: { size: 100 } }), toCatalogActivity).data,
+    queryFn: async () =>
+      toPage(await api('/activities/catalog', { anonymous: true, query: { q: city, size: 100 } }), toCatalogActivity).data.filter((a) => sameCity(a.city, city)),
   });
+
+export const useCatalogActivity = (id: number) =>
+  useQuery({ queryKey: ['catalog-activity', id], queryFn: async () => toCatalogActivity(await api(`/activities/catalog/${id}`, { anonymous: true })) });
+
+export const useActivityReviews = (placeId: number, activityId: number) =>
+  useQuery({
+    queryKey: ['activity-reviews', activityId],
+    queryFn: async () => toPage(await api(`/places/${placeId}/activities/${activityId}/reviews`, { anonymous: true, query: { size: 50 } }), toReview),
+  });
+
+export function useCreateActivityReview(placeId: number, activityId: number) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (body: { nota: number; comentario: string | null }) => api(`/places/${placeId}/activities/${activityId}/reviews`, { method: 'POST', body }),
+    onSuccess: () => Promise.all([qc.invalidateQueries({ queryKey: ['activity-reviews', activityId] }), qc.invalidateQueries({ queryKey: ['catalog-activity', activityId] }), qc.invalidateQueries({ queryKey: ['activity-catalog'] })]),
+  });
+}
+
+/**
+ * Coloca uma atividade do catálogo (passeio, hospedagem...) numa viagem. Se a viagem ainda não tem o destino,
+ * cria o destino a partir do catálogo antes (o backend completa país, foto e descrição pelo destinoCatalogoId).
+ */
+export function useAddCatalogActivityToTrip() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (v: { tripId: number; destinationId: number | null; place: { id: number; name: string }; activity: object }) => {
+      let destinationId = v.destinationId;
+      if (destinationId == null) {
+        const d = toDestination(await api(`/trips/${v.tripId}/destinations`, { method: 'POST', body: { destinoCatalogoId: v.place.id, nome: v.place.name } }));
+        destinationId = d.id;
+      }
+      await api(`/trips/${v.tripId}/destinations/${destinationId}/activities`, { method: 'POST', body: v.activity });
+      return { tripId: v.tripId };
+    },
+    onSuccess: ({ tripId }) =>
+      Promise.all(['destinations', 'activities', 'budget', 'trip'].map((k) => qc.invalidateQueries({ queryKey: [k, tripId] }))).then(() => qc.invalidateQueries({ queryKey: ['trips'] })),
+  });
+}
 
 export function useCreateReview(placeId: number) {
   const qc = useQueryClient();
