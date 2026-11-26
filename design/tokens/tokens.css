@@ -16,6 +16,14 @@
   --color-error-container: #eacaca;
   --color-info-container: #d9e7f4;
   --color-photo-scrim: #344e41c7;
+  --color-tier-bronze: #a8683a;
+  --color-tier-bronze-container: #f0dccb;
+  --color-tier-silver: #8a96a0;
+  --color-tier-silver-container: #e3e7ea;
+  --color-tier-gold: #c29a1e;
+  --color-tier-gold-container: #f3e6b8;
+  --color-tier-emerald: #1f7a5c;
+  --color-tier-emerald-container: #cdebdf;
   --font-display-hero: "DM Serif Display";
   --font-display-hero-mobile: "DM Serif Display";
   --font-display: "Plus Jakarta Sans";

@@ -19,6 +19,10 @@ export interface TravelHistory {
   visitedPlaceIds: Set<number>;
   visitedActivityIds: Set<number>;
   visitedPlaceNames: Set<string>;
+  /** Base dos selos: viagens concluídas e o que foi feito nelas. */
+  completedTrips: Trip[];
+  completedDestinations: TripDestination[];
+  completedActivities: Activity[];
 }
 
 const norm = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
@@ -67,6 +71,9 @@ export function buildHistory(
     visitedPlaceIds: new Set(),
     visitedActivityIds: new Set(),
     visitedPlaceNames: new Set(),
+    completedTrips: trips.filter((t) => t.status === 'COMPLETED'),
+    completedDestinations: [],
+    completedActivities: [],
   };
   trips.forEach((t, i) => {
     const done = t.status === 'COMPLETED';
@@ -74,6 +81,7 @@ export function buildHistory(
       const a3 = toAlpha3(d.isoCode, d.country);
       if (a3) (done ? h.visitedCountries : h.plannedCountries).add(a3);
       if (done) {
+        h.completedDestinations.push(d);
         if (d.catalogId != null) h.visitedPlaceIds.add(d.catalogId);
         h.visitedPlaceNames.add(norm(d.name));
       }
@@ -82,7 +90,10 @@ export function buildHistory(
   const completedIds = new Set(trips.filter((t) => t.status === 'COMPLETED').map((t) => t.id));
   for (const { tripId, activities } of completedActivities) {
     if (!completedIds.has(tripId)) continue;
-    for (const a of activities) if (a.catalogId != null) h.visitedActivityIds.add(a.catalogId);
+    for (const a of activities) {
+      h.completedActivities.push(a);
+      if (a.catalogId != null) h.visitedActivityIds.add(a.catalogId);
+    }
   }
   // Um país visitado não aparece também como "planejado".
   h.visitedCountries.forEach((c) => h.plannedCountries.delete(c));

@@ -7,7 +7,7 @@ const trip = (id: number, status: TripStatus): Trip => ({
   owner: { id: 1, name: 'Ana', email: '', avatarUrl: null }, members: [], budgetTotal: null, plannedTotal: 0,
 });
 const dest = (id: number, name: string, isoCode: string | null, catalogId: number | null, country: string | null = null): TripDestination => ({
-  id, name, isoCode, catalogId, country, photoUrl: null, arrivalDate: null, departureDate: null, order: null,
+  id, tripId: null, name, isoCode, catalogId, country, photoUrl: null, arrivalDate: null, departureDate: null, order: null,
 });
 const act = (id: number, catalogId: number | null): Activity => ({
   id, catalogId, destinationId: 0, name: '', type: null, place: null, dateTime: null, durationMinutes: null, estimatedCost: null, photoUrl: null, description: null,

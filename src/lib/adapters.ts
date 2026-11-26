@@ -43,6 +43,7 @@ export const toPlace = (r: Raw): Place => ({
 
 export const toDestination = (r: Raw): TripDestination => ({
   id: r.id,
+  tripId: r.viagemId ?? null,
   catalogId: r.destinoCatalogoId ?? null,
   name: r.nome,
   country: r.pais ?? null,

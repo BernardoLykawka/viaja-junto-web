@@ -387,3 +387,151 @@ body.discovery .app-bar { position: absolute; left: 0; right: 0; background: tra
 }
 .stop-link { color: inherit; text-decoration: none; }
 .stop-link:hover { text-decoration: underline; text-underline-offset: 4px; text-decoration-color: var(--color-secondary); }
+
+/* ---------- Selos (DESIGN.md › Components › Selos) ---------- */
+.stamp { display: block; overflow: visible; }
+.stamp-shadow { fill: rgba(0, 0, 0, 0.12); }
+.stamp-paper { fill: var(--color-surface); }
+.stamp-frame { fill: var(--tier); }
+.stamp-panel { fill: var(--tier-soft); }
+.stamp-band { fill: var(--color-surface); }
+.stamp-label { font-family: var(--font-label-sm), sans-serif; font-size: 7.5px; font-weight: 700; letter-spacing: 0.12em; fill: var(--color-on-surface); }
+.stamp-art { color: var(--color-primary-strong); }
+.stamp-bronze { --tier: var(--color-tier-bronze); --tier-soft: var(--color-tier-bronze-container); }
+.stamp-silver { --tier: var(--color-tier-silver); --tier-soft: var(--color-tier-silver-container); }
+.stamp-gold { --tier: var(--color-tier-gold); --tier-soft: var(--color-tier-gold-container); }
+.stamp-emerald { --tier: var(--color-tier-emerald); --tier-soft: var(--color-tier-emerald-container); }
+.stamp-locked { --tier: var(--color-neutral); --tier-soft: var(--color-background); }
+.stamp-locked .stamp-art { color: var(--color-on-surface-variant); opacity: 0.45; }
+.stamp-locked .stamp-label { fill: var(--color-on-surface-variant); }
+.stamp-lock-bg { fill: var(--color-on-surface-variant); stroke: var(--color-surface); stroke-width: 2; }
+.stamp-lock { color: var(--color-surface); }
+.map-art-land { fill: currentColor; stroke: var(--color-surface); stroke-width: 0.3; }
+.map-art-visited { fill: var(--color-primary); stroke: var(--color-surface); stroke-width: 0.3; }
+.selo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(176px, 1fr)); gap: var(--spacing-md); }
+.selo-grid.preview { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.selo-card { width: 100%; height: 100%; display: grid; justify-items: center; align-content: start; gap: var(--spacing-sm); padding: var(--spacing-md); border-radius: var(--radius-lg); border: 1px solid var(--color-neutral); background: var(--color-surface); color: var(--color-on-surface); cursor: pointer; text-align: center; font: inherit; transition: transform var(--motion-base, 250ms) ease, box-shadow var(--motion-base, 250ms) ease; }
+.selo-card:hover, .selo-card:focus-visible { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+.selo-card .stamp { transition: transform var(--motion-slow, 450ms) cubic-bezier(0.2, 0.8, 0.2, 1); }
+.selo-card:hover .stamp { transform: rotate(-6deg) scale(1.05); }
+.selo-card.compact { padding: var(--spacing-sm-plus); }
+.selo-name { color: var(--color-primary-strong); }
+.selo-pill { width: fit-content; display: inline-flex; align-items: center; gap: var(--spacing-xs); padding: var(--spacing-xs) var(--spacing-sm); border-radius: var(--radius-full); color: var(--color-on-surface); }
+.selo-locked { background: var(--color-neutral); }
+.selo-bronze { background: var(--color-tier-bronze-container); }
+.selo-silver { background: var(--color-tier-silver-container); }
+.selo-gold { background: var(--color-tier-gold-container); }
+.selo-emerald { background: var(--color-tier-emerald-container); }
+.tier-dot { width: 8px; height: 8px; border-radius: var(--radius-full); display: inline-block; }
+.tier-bronze { background: var(--color-tier-bronze); }
+.tier-silver { background: var(--color-tier-silver); }
+.tier-gold { background: var(--color-tier-gold); }
+.tier-emerald { background: var(--color-tier-emerald); }
+.tier-list { display: grid; gap: var(--spacing-sm); }
+.tier-list > li { display: flex; align-items: center; gap: var(--spacing-md); padding: var(--spacing-sm) var(--spacing-sm-plus); border-radius: var(--radius-md); border: 1px solid var(--color-neutral); }
+.tier-list > li.done { background: var(--color-success-container); border-color: transparent; }
+.tier-list .grow { flex: 1; }
+@media (max-width: 639px) {
+  .selo-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .selo-grid.preview { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (prefers-reduced-motion: reduce) { .selo-card:hover .stamp { transform: none; } }
+
+/* ---------- Álbum de insígnias (Início) ---------- */
+.album { display: grid; grid-template-columns: 1fr 1fr; background: var(--color-background); border-radius: var(--radius-lg); box-shadow: var(--shadow-md); padding: var(--spacing-sm); }
+.album-page { position: relative; background: var(--color-surface); padding: var(--spacing-lg) var(--spacing-lg) var(--spacing-xl); min-height: 100%; }
+.album-page.left { border-radius: var(--radius-md) 0 0 var(--radius-md); border-right: 1px solid var(--color-neutral); box-shadow: inset -8px 0 12px -10px rgba(0, 0, 0, 0.18); }
+.album-page.right { border-radius: 0 var(--radius-md) var(--radius-md) 0; box-shadow: inset 8px 0 12px -10px rgba(0, 0, 0, 0.18); }
+.album-count { color: var(--color-on-surface-variant); margin-bottom: var(--spacing-sm); }
+.album-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--spacing-lg) var(--spacing-md); }
+.album-slot { display: grid; place-items: center; min-height: 140px; }
+.sticker { position: relative; display: grid; justify-items: center; gap: var(--spacing-sm); padding: var(--spacing-xs); background: none; border: 0; transform: rotate(var(--tilt, 0deg)); cursor: pointer; font: inherit; color: var(--color-on-surface); transition: transform var(--motion-base, 250ms) cubic-bezier(0.2, 0.8, 0.2, 1); }
+.sticker:hover, .sticker:focus-visible { transform: rotate(0deg) scale(1.08); z-index: 1; }
+.sticker-name { max-width: 110px; color: var(--color-primary-strong); }
+.slot-empty { display: grid; justify-items: center; gap: var(--spacing-xs); background: none; border: 0; cursor: pointer; font: inherit; padding: var(--spacing-sm); border-radius: var(--radius-sm); }
+.slot-empty:disabled { cursor: default; }
+.slot-empty:not(:disabled):hover .slot-circle { border-color: var(--color-primary); color: var(--color-primary-strong); }
+.slot-circle { width: 72px; height: 86px; border-radius: var(--radius-xs); border: 2px dashed var(--color-neutral); display: grid; place-items: center; color: var(--color-neutral); font: 700 28px/1 var(--font-headline-sm), sans-serif; transition: border-color var(--motion-fast, 150ms) ease, color var(--motion-fast, 150ms) ease; }
+.slot-empty .muted { max-width: 110px; text-align: center; }
+/* As figurinhas "chegam" coladas, uma depois da outra. */
+@keyframes stick { from { opacity: 0; transform: rotate(var(--tilt, 0deg)) scale(1.25) translateY(-10px); } to { opacity: 1; transform: rotate(var(--tilt, 0deg)); } }
+.album-slot .sticker { animation: stick 500ms cubic-bezier(0.2, 0.8, 0.2, 1) backwards; }
+.album-slot:nth-child(2) .sticker { animation-delay: 60ms; }
+.album-slot:nth-child(3) .sticker { animation-delay: 120ms; }
+.album-slot:nth-child(4) .sticker { animation-delay: 180ms; }
+.album-slot:nth-child(5) .sticker { animation-delay: 240ms; }
+.album-slot:nth-child(6) .sticker { animation-delay: 300ms; }
+@media (max-width: 1023px) { .album-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 639px) {
+  .album { grid-template-columns: 1fr; }
+  .album-page.left { border-radius: var(--radius-md) var(--radius-md) 0 0; border-right: 0; border-bottom: 1px dashed var(--color-neutral); box-shadow: none; }
+  .album-page.right { border-radius: 0 0 var(--radius-md) var(--radius-md); box-shadow: none; }
+  .album-page { padding: var(--spacing-md); }
+}
+@media (prefers-reduced-motion: reduce) { .sticker, .sticker:hover { transform: none; } }
+
+/* ---------- Virada de folha do álbum ---------- */
+.album { position: relative; perspective: 3400px; }
+.album-page { position: relative; }
+.album-page-number { position: absolute; bottom: var(--spacing-sm); color: var(--color-on-surface-variant); }
+.album-page-number { left: 50%; transform: translateX(-50%); }
+
+/* Canto dobrado: o pedaço que falta mostra o fundo do álbum e a aba dobrada fica por cima. */
+.page-corner { position: absolute; bottom: var(--spacing-sm); width: 44px; height: 44px; padding: 0; border: 0; background: none; cursor: pointer; z-index: 3; transition: width var(--motion-base, 250ms) cubic-bezier(0.2, 0.8, 0.2, 1), height var(--motion-base, 250ms) cubic-bezier(0.2, 0.8, 0.2, 1); }
+.page-corner.next { right: var(--spacing-sm); }
+.page-corner.prev { left: var(--spacing-sm); }
+.page-corner svg { width: 100%; height: 100%; display: block; overflow: visible; }
+.page-corner .corner-gap { fill: var(--color-background); }
+.page-corner .corner-flap { fill: var(--color-neutral); filter: drop-shadow(-2px -2px 3px rgba(0, 0, 0, 0.16)); }
+.page-corner.prev .corner-flap { filter: drop-shadow(2px -2px 3px rgba(0, 0, 0, 0.16)); }
+.page-corner:hover, .page-corner:focus-visible { width: 64px; height: 64px; }
+.page-corner:focus-visible { outline: 3px solid var(--color-primary); outline-offset: 2px; border-radius: var(--radius-xs); }
+/* Dica: o canto "respira" de leve, chamando para virar. */
+@keyframes corner-hint { 0%, 100% { width: 44px; height: 44px; } 50% { width: 52px; height: 52px; } }
+.page-corner.next:not(:hover):not(:focus-visible) { animation: corner-hint 2.4s ease-in-out 1.2s 2; }
+
+/* A folha: ocupa metade do álbum e é feita de tiras encaixadas (ver Leaf em Badges.tsx). */
+.album-leaf { position: absolute; top: var(--spacing-sm); bottom: var(--spacing-sm); width: calc(50% - var(--spacing-sm)); transform-style: preserve-3d; z-index: 4; pointer-events: none; }
+.album-leaf.next { left: 50%; }
+.album-leaf.prev { right: 50%; }
+.leaf-strip { position: absolute; top: 0; height: 100%; transform-style: preserve-3d; }
+.leaf-strip.root { width: calc(100% / var(--n)); }
+.leaf-strip.child { width: 100%; }
+.album-leaf.next .leaf-strip.root { left: 0; transform-origin: left center; animation: leaf-turn-next var(--turn) cubic-bezier(0.45, 0.05, 0.3, 1) forwards; }
+.album-leaf.next .leaf-strip.child { left: 100%; transform-origin: left center; animation: leaf-bend-next var(--turn) ease-in-out forwards; }
+.album-leaf.prev .leaf-strip.root { right: 0; transform-origin: right center; animation: leaf-turn-prev var(--turn) cubic-bezier(0.45, 0.05, 0.3, 1) forwards; }
+.album-leaf.prev .leaf-strip.child { right: 100%; transform-origin: right center; animation: leaf-bend-prev var(--turn) ease-in-out forwards; }
+/* Cada tira mostra a sua fatia: o conteúdo tem a largura da página inteira e é deslocado (no TSX). */
+.strip-face { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+/* Recorte numa caixa 2D comum dentro da face: o elemento 3D com "esconder verso" não recorta o conteúdo
+   de forma confiável depois de 90° e cada tira mostrava a página inteira (selos repetidos em escada). */
+.strip-clip { position: absolute; inset: 0; overflow: hidden; clip-path: inset(0); }
+.strip-face.back { transform: rotateY(180deg); }
+.strip-content { position: absolute; top: 0; width: calc(100% * var(--n)); height: 100%; }
+.strip-content > .album-page { height: 100%; border-radius: 0; box-shadow: none; border: 0; }
+/* Sombreamento por tira, um pouco defasado: as faixas mais e menos escuras desenham a curva do papel. */
+.strip-face::after { content: ""; position: absolute; inset: 0; background: rgba(31, 31, 31, 0.18); opacity: 0; pointer-events: none; }
+.strip-face.front::after { animation: leaf-shade-front var(--turn) ease-in-out calc(var(--i) * 18ms) forwards; }
+.strip-face.back::after { animation: leaf-shade-back var(--turn) ease-in-out calc(var(--i) * 18ms) forwards; }
+/* Giro na lombada. */
+@keyframes leaf-turn-next { from { transform: rotateY(0deg); } to { transform: rotateY(-180deg); } }
+@keyframes leaf-turn-prev { from { transform: rotateY(0deg); } to { transform: rotateY(180deg); } }
+/* Dobra entre tiras vizinhas: a ponta sobe na frente (curva para cima), passa pelo meio, fica para trás
+   (curva para o outro lado) e assenta reta. Com 10 tiras, 8° por tira dá ~70° de curva na ponta. */
+@keyframes leaf-bend-next { 0% { transform: rotateY(0deg); } 25% { transform: rotateY(-8deg); } 50% { transform: rotateY(-3deg); } 75% { transform: rotateY(6deg); } 100% { transform: rotateY(0deg); } }
+@keyframes leaf-bend-prev { 0% { transform: rotateY(0deg); } 25% { transform: rotateY(8deg); } 50% { transform: rotateY(3deg); } 75% { transform: rotateY(-6deg); } 100% { transform: rotateY(0deg); } }
+@keyframes leaf-shade-front { 0% { opacity: 0; } 45% { opacity: 1; } 55%, 100% { opacity: 0; } }
+@keyframes leaf-shade-back { 0%, 45% { opacity: 0; } 55% { opacity: 1; } 100% { opacity: 0; } }
+/* Sombra projetada nas páginas de baixo enquanto a folha passa. */
+.album.is-turning::after { content: ""; position: absolute; top: var(--spacing-sm); bottom: var(--spacing-sm); width: 6%; background: rgba(31, 31, 31, 0.18); filter: blur(10px); pointer-events: none; z-index: 3; animation: leaf-cast var(--turn) ease-in-out forwards; }
+.album.turn-next::after { left: 50%; }
+.album.turn-prev::after { right: 50%; }
+@keyframes leaf-cast { 0% { opacity: 0; } 40% { opacity: 1; } 100% { opacity: 0; } }
+@media (max-width: 639px) { .page-corner { bottom: var(--spacing-xs); } }
+@media (prefers-reduced-motion: reduce) { .page-corner.next { animation: none; } }
+/* A animação de "colar" só roda quando o álbum aparece. Depois da primeira virada ela fica desligada de vez:
+   se só saísse durante o giro, o navegador a dispararia de novo ao terminar e os selos "pulariam". */
+.album-leaf .sticker, .album.is-turning .album-slot .sticker, .album.has-turned .album-slot .sticker { animation: none; }
+/* Dentro da folha nada se anima nem vira camada própria: uma camada separada escapa do recorte da tira
+   e o selo aparece repetido em escada ao longo da folha. */
+.album-leaf .album-page *, .album-leaf .album-page *::before, .album-leaf .album-page *::after { animation: none !important; transition: none !important; will-change: auto !important; }

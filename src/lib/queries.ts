@@ -1,4 +1,4 @@
-import { keepPreviousData, useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { keepPreviousData, useInfiniteQuery, useMutation, useQueries, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api } from './api';
 import { useAuth } from './auth';
 import { ROLE_TO_API, STATUS_TO_API, toActivity, toBudget, toCatalogActivity, toDestination, toMember, toPage, toPlace, toReview, toTrip, toUser } from './adapters';
@@ -259,3 +259,33 @@ export const usePlaceReviewsPaged = (placeId: number) =>
 export const useActivityReviewsPaged = (placeId: number, activityId: number) =>
   usePaged(['activity-reviews', activityId], async (i) =>
     toPage(await api(`/places/${placeId}/activities/${activityId}/reviews`, { anonymous: true, query: { page: i, size: 10 } }), toReview));
+
+/**
+ * Quantas avaliações o usuário publicou (selo "Crítico de viagem"). A API não tem "minhas avaliações",
+ * então percorre as avaliações públicas de cada destino e atividade do catálogo. O catálogo é pequeno e
+ * as respostas ficam em cache; com um catálogo grande isto pede uma rota própria no backend.
+ */
+export function useMyReviewCount(meId: number | undefined) {
+  const places = usePlaces('');
+  const activities = useQuery({
+    queryKey: ['activity-catalog', 'all'],
+    staleTime: 5 * 60_000,
+    queryFn: async () => toPage(await api('/activities/catalog', { anonymous: true, query: { size: 100 } }), toCatalogActivity).data,
+  });
+  const targets = [
+    ...(places.data?.data ?? []).map((p) => ({ key: ['reviews', 'all', 'place', p.id], url: `/places/${p.id}/reviews`, query: { limit: 100 } })),
+    ...(activities.data ?? []).map((a) => ({ key: ['reviews', 'all', 'activity', a.id], url: `/places/0/activities/${a.id}/reviews`, query: { size: 100 } })),
+  ];
+  const results = useQueries({
+    queries: targets.map((t) => ({
+      queryKey: t.key,
+      enabled: meId != null,
+      staleTime: 5 * 60_000,
+      queryFn: async () => toPage(await api(t.url, { anonymous: true, query: t.query }), toReview).data,
+    })),
+  });
+  return {
+    loading: places.isLoading || activities.isLoading || results.some((r) => r.isLoading),
+    count: results.reduce((n, r) => n + (r.data ?? []).filter((rv) => rv.author.id === meId).length, 0),
+  };
+}

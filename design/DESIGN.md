@@ -20,6 +20,14 @@ colors:
   error-container: "#EACACA"
   info-container: "#D9E7F4"
   photo-scrim: "rgba(52, 78, 65, 0.78)"
+  tier-bronze: "#A8683A"
+  tier-bronze-container: "#F0DCCB"
+  tier-silver: "#8A96A0"
+  tier-silver-container: "#E3E7EA"
+  tier-gold: "#C29A1E"
+  tier-gold-container: "#F3E6B8"
+  tier-emerald: "#1F7A5C"
+  tier-emerald-container: "#CDEBDF"
 typography:
   display-hero:
     fontFamily: DM Serif Display
@@ -375,6 +383,24 @@ components:
   badge-completed:
     backgroundColor: "{colors.neutral}"
     textColor: "{colors.on-surface}"
+  selo-locked:
+    backgroundColor: "{colors.neutral}"
+    textColor: "{colors.on-surface}"
+    typography: "{typography.label-sm}"
+    rounded: "{rounded.full}"
+    size: 96px
+  selo-bronze:
+    backgroundColor: "{colors.tier-bronze-container}"
+    textColor: "{colors.on-surface}"
+  selo-silver:
+    backgroundColor: "{colors.tier-silver-container}"
+    textColor: "{colors.on-surface}"
+  selo-gold:
+    backgroundColor: "{colors.tier-gold-container}"
+    textColor: "{colors.on-surface}"
+  selo-emerald:
+    backgroundColor: "{colors.tier-emerald-container}"
+    textColor: "{colors.on-surface}"
   alert-success:
     backgroundColor: "{colors.success-container}"
     textColor: "{colors.on-surface}"
@@ -450,6 +476,8 @@ A paleta é exatamente a da identidade visual do projeto (`docs/visual_id.md`): 
 - **Branco — surface (#FFFFFF):** a barra superior, o fundo das telas de descoberta (`page-discovery`), cards, busca, campos, modais e menus.
 - **Tinta — on-surface (#1F1F1F):** todo o texto principal. `on-surface-variant` (72% tinta, 28% branco) é o texto secundário: legendas, datas, textos de ajuda.
 - **Estados:** `success-container` (#D9EAD8), `warning-container` (#F1E2C7), `error-container` (#EACACA) e `info-container` (#D9E7F4) são fundos de alertas e badges, sempre com texto `#1F1F1F` e um ícone que diga o estado. A cor nunca é o único sinal. Eles também tingem os **círculos de ícone** (`search-field-icon`, `stat-icon`, `stat-icon-warm`, `stat-icon-cool`), como os círculos coloridos claros da referência.
+
+- **Níveis dos selos:** Bronze (`tier-bronze`, #A8683A), Prata (`tier-silver`, #8A96A0), Ouro (`tier-gold`, #C29A1E) e Esmeralda (`tier-emerald`, #1F7A5C), do mais fácil ao mais difícil. São as únicas cores fora da paleta principal e servem **só** para a moldura do selo e o ponto do nível; nunca como fundo de texto. O quadro da ilustração e o selinho do nível usam as versões claras `tier-*-container`, sempre com texto #1F1F1F, e o nível também vem escrito ("OURO").
 
 Status da viagem (FR07): **Planejando** usa `info-container`, **Confirmada** usa `success-container` e **Concluída** usa `neutral`.
 
@@ -550,6 +578,7 @@ Os tokens do cabeçalho são a referência normativa; abaixo, o comportamento de
 - **Banner de destaque (`promo-banner`):** foto com véu Floresta da esquerda para a direita, `promo-badge` em pílula no topo, título `headline-md` com a palavra-chave em `warning-container` (o "30% off" amarelo da referência vira, por exemplo, "faltam 87 dias") e um botão branco em pílula.
 - **Faixa de números (`stats-strip`):** card branco em pílula larga (raio 24 px) com 3 números lado a lado, cada um com um `stat-icon` tingido (Menta, Areia quente, Azul claro) à esquerda, valor em `title-md` e legenda em `body-sm`.
 - **Valores:** `stat-value` para números de destaque (orçamento total, saldo) e `money` para valores em listas, alinhados à direita.
+- **Selos:** as conquistas são selos postais (84 × 100, 64 px de largura na prévia): papel branco com **picote** nas quatro bordas, moldura na cor do nível, quadro em `tier-*-container` com a ilustração em Pinheiro (Cristo Redentor, mapa do continente, carimbo, palmeira...) e faixa branca com o nível em caixa alta. Bloqueado: moldura Areia, ilustração apagada, faixa "BLOQUEADO" e cadeado. Abaixo do selo: nome em `title-md`, selinho do nível (`selo-<nível>`) e barra de progresso até o próximo nível ("3 de 5 países"). Clicar abre um diálogo com os quatro níveis e o que falta para cada um. No Início, a prévia é um **álbum de selos** aberto: duas páginas brancas sobre fundo Linho com a dobra no meio, os conquistados "colados" levemente tortos (até 6°), e os espaços vazios em retângulo tracejado Areia com "?". Para virar a página, o canto de baixo da folha fica **dobrado** (aba Areia sobre o fundo Linho, cresce no hover); clicar vira a folha na lombada em 900 ms, com frente e verso, leve curvatura e sombra que acompanha o giro. Sem setas.
 - **Ícones:** biblioteca **Phosphor Icons**, estilo `regular` (ou `fill` para estado ativo), 20 px em botões e 24 px soltos (`icon-accent`). Exemplos: `airplane-tilt` (viagem), `map-pin` (destino), `calendar-blank` (datas), `wallet` (orçamento), `receipt` (despesa), `users-three` (membros), `bell` (notificações), `star` (avaliação).
 
 ## Do's and Don'ts

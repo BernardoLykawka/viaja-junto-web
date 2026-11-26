@@ -5,6 +5,7 @@ import { errorMessage, fieldErrors } from '../lib/api';
 import { useMe, useUpdateMe } from '../lib/queries';
 import { Alert, Avatar, Button, Field, Skeleton } from '../components/ui';
 import { TravelMapSection } from '../components/TravelMapSection';
+import { BadgesSection } from '../components/badges/Badges';
 import { useTravelHistory } from '../lib/travelHistory';
 
 export function Perfil() {
@@ -54,6 +55,7 @@ export function Perfil() {
         <Button variant="secondary" icon={SignOut} onClick={() => void signOut()}>Sair</Button>
       </section>
       <TravelMapSection history={history} />
+      <BadgesSection />
     </div>
   );
 }

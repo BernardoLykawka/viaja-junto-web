@@ -19,6 +19,7 @@ import { NovaViagemDialog, type TripDraft } from '../components/NovaViagemDialog
 import { FadeImg } from '../components/FadeImg';
 import { HeroPlane } from '../components/HeroPlane';
 import { tripPeople } from '../lib/members';
+import { BadgeAlbum } from '../components/badges/Badges';
 
 /** Próxima viagem = a de início futuro mais próximo; sem nenhuma futura, a que está em andamento. */
 function pickNextTrip(trips: Trip[]): Trip | undefined {
@@ -150,6 +151,8 @@ export function Painel() {
           </section>
         </div>
         )}
+
+        {authed && <BadgeAlbum />}
 
         <section className="band-full" aria-labelledby="top-destinos">
           <div className="section-row">
