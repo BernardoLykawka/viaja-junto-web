@@ -13,6 +13,7 @@ import { LoginToAct } from '../components/LoginToAct';
 import { ReviewGate } from '../components/ReviewGate';
 import { hasVisitedPlace, useTravelHistory } from '../lib/travelHistory';
 import type { Icon } from '@phosphor-icons/react';
+import { FadeImg } from '../components/FadeImg';
 
 export function Destino() {
   const placeId = Number(useParams().id);
@@ -48,7 +49,7 @@ export function Destino() {
       <Link to="/descobrir" className="back type-label-md"><ArrowLeft size={20} aria-hidden /> Descobrir</Link>
 
       <header className="place-hero">
-        {p.photoUrl ? <img src={p.photoUrl} alt={`Foto de ${p.name}`} /> : <span className="photo-fallback"><MapPin size={64} aria-hidden /></span>}
+        {p.photoUrl ? <FadeImg width={1600} src={p.photoUrl} alt={`Foto de ${p.name}`} /> : <span className="photo-fallback"><MapPin size={64} aria-hidden /></span>}
         <div className="place-hero-caption">
           <p className="type-label-sm inline-link">
             {cat && <><cat.icon size={16} weight="fill" aria-hidden /> <Link to={`/descobrir?categoria=${cat.id}`} className="hero-cat-link">{cat.label}</Link> · </>}

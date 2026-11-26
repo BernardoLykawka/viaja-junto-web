@@ -19,3 +19,15 @@ describe('matchPlace', () => {
     expect(matchPlace(places, '  ')).toBeNull();
   });
 });
+
+import { sizedPhoto } from '../components/FadeImg';
+
+describe('sizedPhoto', () => {
+  it('pede ao Unsplash uma versão menor e deixa outras origens como estão', () => {
+    const u = new URL(sizedPhoto('https://images.unsplash.com/photo-123', 800)!);
+    expect(u.searchParams.get('w')).toBe('800');
+    expect(u.searchParams.get('auto')).toBe('format');
+    expect(sizedPhoto('https://upload.wikimedia.org/x/960px-a.jpg')).toBe('https://upload.wikimedia.org/x/960px-a.jpg');
+    expect(sizedPhoto('https://images.unsplash.com/photo-1?w=300')).toBe('https://images.unsplash.com/photo-1?w=300');
+  });
+});

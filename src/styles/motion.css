@@ -1,0 +1,110 @@
+/* Movimento (DESIGN.md › Motion). Tudo aqui some com prefers-reduced-motion no fim do arquivo. */
+:root {
+  --motion-fast: 150ms;
+  --motion-base: 250ms;
+  --motion-slow: 450ms;
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+html { scroll-behavior: smooth; }
+
+@keyframes rise-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes pop-in { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: none; } }
+@keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+@keyframes spin-slow { to { transform: rotate(360deg); } }
+@keyframes dot-in { from { transform: scale(0); } to { transform: scale(1); } }
+
+/* ---------- Entrada de página ---------- */
+.page-enter { animation: rise-in var(--motion-slow) var(--ease-out) backwards; }
+
+/* ---------- Listas em cascata (até 12 itens) ---------- */
+.grid-cards > li, .track > li > *, .list > li, .activities > li, .stop, .kpis > *, .cat-rows > *, .chips > * {
+  animation: rise-in var(--motion-slow) var(--ease-out) backwards;
+}
+.grid-cards > li:nth-child(1), .track > li:nth-child(1) > *, .list > li:nth-child(1), .activities > li:nth-child(1), .stop:nth-child(1), .kpis > :nth-child(1), .chips > :nth-child(1) { animation-delay: 0ms; }
+.grid-cards > li:nth-child(2), .track > li:nth-child(2) > *, .list > li:nth-child(2), .activities > li:nth-child(2), .stop:nth-child(2), .kpis > :nth-child(2), .chips > :nth-child(2) { animation-delay: 40ms; }
+.grid-cards > li:nth-child(3), .track > li:nth-child(3) > *, .list > li:nth-child(3), .activities > li:nth-child(3), .stop:nth-child(3), .kpis > :nth-child(3), .chips > :nth-child(3) { animation-delay: 80ms; }
+.grid-cards > li:nth-child(4), .track > li:nth-child(4) > *, .list > li:nth-child(4), .activities > li:nth-child(4), .stop:nth-child(4), .kpis > :nth-child(4), .chips > :nth-child(4) { animation-delay: 120ms; }
+.grid-cards > li:nth-child(5), .track > li:nth-child(5) > *, .list > li:nth-child(5), .activities > li:nth-child(5), .stop:nth-child(5), .chips > :nth-child(5) { animation-delay: 160ms; }
+.grid-cards > li:nth-child(6), .track > li:nth-child(6) > *, .list > li:nth-child(6), .activities > li:nth-child(6), .stop:nth-child(6), .chips > :nth-child(6) { animation-delay: 200ms; }
+.grid-cards > li:nth-child(7), .track > li:nth-child(7) > *, .list > li:nth-child(7), .chips > :nth-child(7) { animation-delay: 240ms; }
+.grid-cards > li:nth-child(8), .track > li:nth-child(8) > *, .list > li:nth-child(8) { animation-delay: 280ms; }
+.grid-cards > li:nth-child(9), .track > li:nth-child(9) > * { animation-delay: 320ms; }
+.grid-cards > li:nth-child(10), .track > li:nth-child(10) > * { animation-delay: 360ms; }
+.grid-cards > li:nth-child(11), .track > li:nth-child(11) > * { animation-delay: 400ms; }
+.grid-cards > li:nth-child(n+12), .track > li:nth-child(n+12) > * { animation-delay: 440ms; }
+.alert, .empty { animation: fade-in var(--motion-base) var(--ease-standard) backwards; }
+
+/* ---------- Cards e fotos ---------- */
+.photo-card { transition: transform var(--motion-base) var(--ease-out), box-shadow var(--motion-base) var(--ease-out); will-change: transform; }
+.photo-card:hover, .photo-card:focus-visible { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+.photo-card img, .photo-card .scene { transition: transform var(--motion-slow) var(--ease-out), opacity var(--motion-slow) var(--ease-out); }
+.floating-card, .card-compact, .stats-strip .item { transition: transform var(--motion-base) var(--ease-out), box-shadow var(--motion-base) var(--ease-out); }
+.floating-card:hover { transform: translateY(-3px); }
+.card-compact:hover { box-shadow: var(--shadow-sm); }
+/* Foto aparece com fade ao terminar de carregar (classe "loaded" posta pelo componente FadeImg). */
+img.fade { opacity: 0; }
+img.fade.loaded { opacity: 1; transition: opacity var(--motion-slow) var(--ease-out); }
+
+/* ---------- Botões, chips, abas, menu ---------- */
+.button, .button-pill, .search-button, .chip, .tab, .icon-button, .carousel-arrow, .favorite-button, .star-option, .link-button, .nav-item, .bottom-nav a {
+  transition: background-color var(--motion-fast) var(--ease-standard), color var(--motion-fast) var(--ease-standard),
+    border-color var(--motion-fast) var(--ease-standard), transform var(--motion-fast) var(--ease-standard), box-shadow var(--motion-fast) var(--ease-standard);
+}
+.button:active:not(:disabled), .button-pill:active, .search-button:active, .chip:active, .icon-button:active, .carousel-arrow:active, .star-option:active { transform: scale(0.97); }
+.button-pill .pill-icon, .search-button svg { transition: transform var(--motion-base) var(--ease-out); }
+.button-pill:hover .pill-icon { transform: translateX(3px); }
+.search-button:hover svg { transform: translateX(2px); }
+.carousel-arrow:hover { transform: translateY(-50%) scale(1.06); }
+.carousel-arrow:active { transform: translateY(-50%) scale(0.95); }
+.tab { position: relative; }
+.tab[aria-selected="true"] { animation: none; }
+.nav-item[aria-current="page"]::after { animation: dot-in var(--motion-base) var(--ease-out) backwards; }
+.star-option:hover svg { transform: scale(1.15); transition: transform var(--motion-fast) var(--ease-out); }
+.search-field { transition: background-color var(--motion-fast) var(--ease-standard); }
+.progress-fill { transition: width var(--motion-slow) var(--ease-out); }
+
+/* ---------- Modais ---------- */
+.dialog[open] { animation: pop-in var(--motion-base) var(--ease-out) backwards; }
+.dialog[open]::backdrop { animation: fade-in var(--motion-base) var(--ease-standard) backwards; }
+
+/* ---------- Hero do Início ---------- */
+.hero-copy > * { animation: rise-in var(--motion-slow) var(--ease-out) backwards; }
+.hero-copy > :nth-child(2) { animation-delay: 60ms; }
+.hero-copy > :nth-child(3) { animation-delay: 120ms; }
+.hero-copy > :nth-child(4) { animation-delay: 200ms; }
+.hero-title em { animation: rise-in var(--motion-slow) var(--ease-out) 260ms backwards; }
+.hero-overline .hero-plane { overflow: visible; }
+/* O rastro fica parado; só o avião voa (animado no próprio SVG, em HeroPlane). */
+.hero-art .photo { animation: fade-in 700ms var(--ease-standard) backwards; }
+.hero-art .shape { animation: pop-in 700ms var(--ease-out) backwards; }
+.floating-card { animation: rise-in var(--motion-slow) var(--ease-out) 500ms backwards, float 6s ease-in-out 1s infinite; }
+.floating-card:hover { animation-play-state: paused; }
+.map-button svg text { transform-origin: 56px 56px; animation: spin-slow 24s linear infinite; }
+.search-bar { animation: rise-in var(--motion-slow) var(--ease-out) 300ms backwards; }
+.search-chip { animation: pop-in var(--motion-base) var(--ease-out) 600ms backwards; }
+
+/* ---------- Mapa-múndi ---------- */
+.world-map .country.visited, .world-map .country.planned { animation: fade-in 800ms var(--ease-standard) backwards; }
+
+/* ---------- Movimento reduzido: tudo instantâneo, sem deslocamento ---------- */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after, ::backdrop {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0.01ms !important;
+  }
+  .photo-card:hover, .photo-card:focus-visible, .floating-card:hover { transform: none; }
+}
+
+/* Lista do filtro anterior enquanto a nova chega (evita o pisca-pisca de esqueleto). */
+.is-updating { opacity: 0.55; transition: opacity var(--motion-fast) var(--ease-standard); }
+
+/* Barra de carregamento de página (fixa no topo, acima da barra superior). */
+@keyframes route-progress { from { transform: translateX(-100%); } to { transform: translateX(250%); } }
+.route-loading { position: fixed; top: 0; left: 0; right: 0; height: 3px; overflow: hidden; z-index: 50; background: var(--color-success-container); }
+.route-loading::after { content: ""; position: absolute; inset: 0; width: 40%; background: var(--color-primary); animation: route-progress 1.1s var(--ease-standard) infinite; }

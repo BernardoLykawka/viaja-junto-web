@@ -517,6 +517,19 @@ Formas **suaves e acolhedoras**, todas na escala de 4 px:
 
 Fotos de destinos seguem o raio do card que as contém: 16 px nos cards de foto, 24 px no banner de destaque. A foto do hero é a exceção: em vez de raio, ela usa um **recorte orgânico** (um `clip-path` com curvas suaves, como uma onda que desce da esquerda para a direita), sem cantos retos à vista, e uma forma Linho maior atrás criando a moldura.
 
+## Motion
+
+O movimento existe para dar **continuidade** (de onde veio, para onde foi) e **resposta** ao toque, nunca para enfeitar. Ele é curto, suave e sempre desligado quando o sistema pede menos movimento (`prefers-reduced-motion: reduce`).
+
+- **Durações:** rápida 150 ms (hover, toque, chips), base 250 ms (abas, modais, cards) e lenta 450 ms (entrada de página e do hero). Nada passa de 600 ms, exceto o brilho dos esqueletos.
+- **Curvas:** saída suave `cubic-bezier(0.2, 0.8, 0.2, 1)` para o que entra; padrão `cubic-bezier(0.4, 0, 0.2, 1)` para mudanças de estado. Sem quicar exagerado.
+- **Entrada de página:** o conteúdo sobe 8 px e aparece (opacidade 0 → 1) em 450 ms. Listas e carrosséis entram em cascata, 40 ms entre itens, no máximo 12 itens animados.
+- **Hover e toque:** cards clicáveis sobem 4 px e ganham `shadow-md`; a foto aproxima 4%. Botões e chips encolhem para 97% enquanto pressionados.
+- **Hero:** as duas linhas do título entram em sequência; o rastro do avião se desenha; o card flutuante entra por último e flutua devagar (6 s, 4 px).
+- **Modais:** o véu escurece e o modal cresce de 96% para 100% em 250 ms.
+- **Fotos:** aparecem com fade quando terminam de carregar, sobre o fundo Areia.
+- **Movimento reduzido:** sem deslocamento, escala, cascata ou flutuação; ficam só mudanças de cor e opacidade instantâneas.
+
 ## Components
 
 Os tokens do cabeçalho são a referência normativa; abaixo, o comportamento de cada grupo.

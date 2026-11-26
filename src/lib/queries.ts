@@ -1,4 +1,4 @@
-import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { keepPreviousData, useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api } from './api';
 import { useAuth } from './auth';
 import { ROLE_TO_API, STATUS_TO_API, toActivity, toBudget, toCatalogActivity, toDestination, toMember, toPage, toPlace, toReview, toTrip, toUser } from './adapters';
@@ -227,12 +227,16 @@ export function usePaged<T>(key: unknown[], fetchPage: (index: number) => Promis
     queryKey: key,
     enabled,
     initialPageParam: 0,
+    // Ao trocar filtro ou busca, a lista anterior fica na tela (esmaecida) até a nova chegar.
+    placeholderData: keepPreviousData,
     queryFn: ({ pageParam }) => fetchPage(pageParam),
     getNextPageParam: (last, _all, lastParam) => (last.hasMore ? lastParam + 1 : undefined),
   });
   return {
     ...q,
     items: q.data?.pages.flatMap((p) => p.data) ?? [],
+    /** Mostrando a lista do filtro anterior enquanto a nova carrega. */
+    updating: q.isPlaceholderData && q.isFetching,
     totalItems: q.data?.pages[0]?.totalItems,
   };
 }

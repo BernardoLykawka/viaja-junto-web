@@ -12,6 +12,7 @@ import { LoginToAct } from '../components/LoginToAct';
 import { ReviewGate } from '../components/ReviewGate';
 import { useTravelHistory } from '../lib/travelHistory';
 import { useAuth } from '../lib/auth';
+import { FadeImg } from '../components/FadeImg';
 
 /** Atividade do catálogo dentro de um destino: um passeio (Cristo Redentor) ou uma hospedagem (hotel). */
 export function Atividade() {
@@ -54,7 +55,7 @@ export function Atividade() {
     <div className="container page-work">
       {back}
       <header className="place-hero">
-        {a.photoUrl ? <img src={a.photoUrl} alt={`Foto de ${a.name}`} /> : <span className="photo-fallback"><MapPin size={64} aria-hidden /></span>}
+        {a.photoUrl ? <FadeImg width={1600} src={a.photoUrl} alt={`Foto de ${a.name}`} /> : <span className="photo-fallback"><MapPin size={64} aria-hidden /></span>}
         <div className="place-hero-caption">
           <p className="type-label-sm" style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--spacing-xs)' }}>
             <I size={16} weight="fill" aria-hidden /> {normalizeType(a.type) ?? a.type} · {[a.location, a.city].filter(Boolean).join(', ')}

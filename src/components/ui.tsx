@@ -155,3 +155,12 @@ export function LoadMore({ hasMore, loading, onClick, label = 'Carregar mais' }:
     </div>
   );
 }
+
+/** Carregamento de página: barra fina no topo (não cobre a logo no Início) e texto só para leitor de tela. */
+export function RouteLoading() {
+  return (
+    <div className="route-loading" role="status">
+      <span className="sr-only">Carregando…</span>
+    </div>
+  );
+}

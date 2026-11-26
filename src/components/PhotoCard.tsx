@@ -2,11 +2,12 @@ import { useRef, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { CaretLeft, CaretRight, MapPin, Star, Users } from '@phosphor-icons/react';
 import { rating } from '../lib/format';
+import { FadeImg } from './FadeImg';
 
 export function PhotoCard({ to, photoUrl, alt, title, subtitle, badge, corner }: { to: string; photoUrl: string | null; alt: string; title: string; subtitle?: string; badge?: ReactNode; corner?: ReactNode }) {
   return (
     <Link to={to} className="photo-card">
-      {photoUrl ? <img src={photoUrl} alt={alt} loading="lazy" /> : <span className="photo-fallback"><MapPin size={48} aria-hidden /></span>}
+      {photoUrl ? <FadeImg src={photoUrl} alt={alt} loading="lazy" /> : <span className="photo-fallback"><MapPin size={48} aria-hidden /></span>}
       {badge}
       <div className="caption">
         <div style={{ minWidth: 0 }}>

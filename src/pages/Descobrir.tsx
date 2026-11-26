@@ -68,7 +68,7 @@ export function Descobrir() {
           {places.error && <Alert kind="error" action={<Button variant="compact" onClick={() => void places.refetch()}>Tentar de novo</Button>}>{errorMessage(places.error)}</Alert>}
           {places.isLoading ? skeletons : places.items.length ? (
             <>
-            <ul className="grid-cards">
+            <ul className={`grid-cards ${places.updating ? 'is-updating' : ''}`} aria-busy={places.updating}>
               {places.items.map((p) => (
                 <li key={p.id}>
                   <PhotoCard to={`/destinos/${p.id}`} photoUrl={p.photoUrl} alt={`Foto de ${p.name}`} title={p.name} subtitle={[p.city !== p.name ? p.city : null, p.country].filter(Boolean).join(', ')} badge={<CategoryBadge category={p.category} />} corner={<RatingPill value={p.averageRating} />} />
@@ -95,7 +95,7 @@ export function Descobrir() {
           {activities.error && <Alert kind="error" action={<Button variant="compact" onClick={() => void activities.refetch()}>Tentar de novo</Button>}>{errorMessage(activities.error)}</Alert>}
           {activities.isLoading ? skeletons : activities.items.length ? (
             <>
-              <ul className="grid-cards">{activities.items.map((a) => <li key={a.id}><CatalogActivityCard a={a} /></li>)}</ul>
+              <ul className={`grid-cards ${activities.updating ? 'is-updating' : ''}`} aria-busy={activities.updating}>{activities.items.map((a) => <li key={a.id}><CatalogActivityCard a={a} /></li>)}</ul>
               <LoadMore hasMore={!!activities.hasNextPage} loading={activities.isFetchingNextPage} onClick={() => void activities.fetchNextPage()} label="Mais atividades" />
             </>
           ) : !activities.error && <EmptyState icon={Compass} text={q || tipo ? 'Nenhuma atividade encontrada com esses filtros.' : 'Nenhuma atividade cadastrada ainda.'} />}

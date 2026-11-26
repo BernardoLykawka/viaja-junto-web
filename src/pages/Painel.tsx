@@ -1,7 +1,7 @@
 import { useMemo, useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
-  AirplaneTilt, CalendarBlank, CaretRight, Globe, ArrowRight, MapPin, MapTrifold, UsersThree, Airplane, type Icon,
+  AirplaneTilt, CalendarBlank, CaretRight, Globe, ArrowRight, MapPin, MapTrifold, UsersThree, type Icon,
 } from '@phosphor-icons/react';
 import { errorMessage } from '../lib/api';
 import { daysUntil, money } from '../lib/format';
@@ -16,6 +16,8 @@ import { matchPlace, placeLabel } from '../lib/places';
 import { Alert, AvatarStack, Button, EmptyState, Skeleton } from '../components/ui';
 import { Carousel, PhotoCard, RatingPill } from '../components/PhotoCard';
 import { NovaViagemDialog, type TripDraft } from '../components/NovaViagemDialog';
+import { FadeImg } from '../components/FadeImg';
+import { HeroPlane } from '../components/HeroPlane';
 
 /** Próxima viagem = a de início futuro mais próximo; sem nenhuma futura, a que está em andamento. */
 function pickNextTrip(trips: Trip[]): Trip | undefined {
@@ -55,7 +57,7 @@ export function Painel() {
         <div className="hero-art">
           <div className="shape" />
           <div className="photo">
-            {heroPhoto ? <img src={heroPhoto} alt="" /> : <div className="hero-photo-fallback"><AirplaneTilt size={96} aria-hidden /></div>}
+            {heroPhoto ? <FadeImg width={1600} src={heroPhoto} alt="" /> : <div className="hero-photo-fallback"><AirplaneTilt size={96} aria-hidden /></div>}
           </div>
           {next && (
             <Link to={`/viagens/${next.id}`} className="floating-card">
@@ -88,7 +90,7 @@ export function Painel() {
             {firstName && <p className="type-label-md muted">Olá, {firstName}</p>}
             <p className="hero-overline type-label-overline">
               Planeje. Divida. Viaje.
-              <svg viewBox="0 0 88 24" fill="none" aria-hidden><path d="M2 20 C 20 22, 34 4, 62 8" stroke="currentColor" strokeWidth="2" strokeDasharray="3 5" strokeLinecap="round" /><g transform="translate(60 -2)"><Airplane weight="fill" size={22} /></g></svg>
+              <HeroPlane />
             </p>
             <h1 id="hero-title" className="hero-title type-display-hero">Sua viagem <em>começa aqui.</em></h1>
             <p className="hero-text type-body-lg">Monte o roteiro, controle o orçamento e divida as despesas com quem vai junto.</p>

@@ -4,7 +4,7 @@ import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 import { AirplaneTilt, Compass, GlobeHemisphereWest, UserCircle } from '@phosphor-icons/react';
 import { useAuth } from '../lib/auth';
 import { useMe } from '../lib/queries';
-import { Avatar } from './ui';
+import { Avatar, RouteLoading } from './ui';
 
 const NAV = [
   { to: '/viagens', label: 'Minhas viagens' },
@@ -83,8 +83,11 @@ export function Layout() {
       <ClipPaths />
       <main id="conteudo" ref={main} tabIndex={-1} style={{ paddingBottom: 'var(--spacing-4xl)' }} className="app-main">
         <ErrorBoundary key={pathname}>
-          <Suspense fallback={<p className="type-body-md muted container page-work" role="status">Carregando…</p>}>
-            <Outlet />
+          <Suspense fallback={<RouteLoading />}>
+            {/* Cada troca de rota remonta o conteúdo, que entra subindo de leve (DESIGN.md › Motion). */}
+            <div key={pathname} className="page-enter">
+              <Outlet />
+            </div>
           </Suspense>
         </ErrorBoundary>
       </main>
