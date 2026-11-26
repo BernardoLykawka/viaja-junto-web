@@ -1,5 +1,6 @@
 import { Suspense, useEffect, useRef } from 'react';
 import { ErrorBoundary } from './ErrorBoundary';
+import { QuickSearch } from './QuickSearch';
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 import { AirplaneTilt, Compass, GlobeHemisphereWest, UserCircle } from '@phosphor-icons/react';
 import { useAuth } from '../lib/auth';
@@ -70,6 +71,7 @@ export function Layout() {
             ))}
           </nav>
           <div className="bar-actions">
+            <QuickSearch />
             {status === 'loading' ? null : status === 'anon' ? (
               <Link to="/entrar" state={{ from: pathname }} className="button button-secondary type-label-md login-link">Entrar</Link>
             ) : (<>

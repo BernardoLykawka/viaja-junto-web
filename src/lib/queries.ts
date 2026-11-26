@@ -73,12 +73,16 @@ export function useTripMutations(tripId: number) {
   return {
     addDestination: useMutation({ ...opt, mutationFn: (body: object) => api(`/trips/${tripId}/destinations`, { method: 'POST', body }) }),
     removeDestination: useMutation({ ...opt, mutationFn: (id: number) => api(`/trips/${tripId}/destinations/${id}`, { method: 'DELETE' }) }),
+    /** PATCH parcial do destino; `ordemVisita` move no roteiro e o backend renumera os outros. */
+    updateDestination: useMutation({ ...opt, mutationFn: ({ id, body }: { id: number; body: object }) => api(`/trips/${tripId}/destinations/${id}`, { method: 'PATCH', body }) }),
     addActivity: useMutation({
       ...opt,
       mutationFn: ({ destinationId, body }: { destinationId: number; body: object }) =>
         api(`/trips/${tripId}/destinations/${destinationId}/activities`, { method: 'POST', body }),
     }),
     removeActivity: useMutation({ ...opt, mutationFn: (id: number) => api(`/trips/${tripId}/activities/${id}`, { method: 'DELETE' }) }),
+    /** PATCH parcial: só os campos enviados mudam (string vazia apaga local/descrição). */
+    updateActivity: useMutation({ ...opt, mutationFn: ({ id, body }: { id: number; body: object }) => api(`/trips/${tripId}/activities/${id}`, { method: 'PATCH', body }) }),
     setBudget: useMutation({ ...opt, mutationFn: (orcamentoTotal: number) => api(`/trips/${tripId}/budget`, { method: 'PUT', body: { orcamentoTotal } }) }),
     setRole: useMutation({
       ...opt,
@@ -267,11 +271,7 @@ export const useActivityReviewsPaged = (placeId: number, activityId: number) =>
  */
 export function useMyReviewCount(meId: number | undefined) {
   const places = usePlaces('');
-  const activities = useQuery({
-    queryKey: ['activity-catalog', 'all'],
-    staleTime: 5 * 60_000,
-    queryFn: async () => toPage(await api('/activities/catalog', { anonymous: true, query: { size: 100 } }), toCatalogActivity).data,
-  });
+  const activities = useAllCatalogActivities();
   const targets = [
     ...(places.data?.data ?? []).map((p) => ({ key: ['reviews', 'all', 'place', p.id], url: `/places/${p.id}/reviews`, query: { limit: 100 } })),
     ...(activities.data ?? []).map((a) => ({ key: ['reviews', 'all', 'activity', a.id], url: `/places/0/activities/${a.id}/reviews`, query: { size: 100 } })),
@@ -289,3 +289,11 @@ export function useMyReviewCount(meId: number | undefined) {
     count: results.reduce((n, r) => n + (r.data ?? []).filter((rv) => rv.author.id === meId).length, 0),
   };
 }
+
+/** Todo o catálogo de atividades (público, até 100). Usado pela busca rápida e pelo selo Crítico de viagem. */
+export const useAllCatalogActivities = () =>
+  useQuery({
+    queryKey: ['activity-catalog', 'all'],
+    staleTime: 5 * 60_000,
+    queryFn: async () => toPage(await api('/activities/catalog', { anonymous: true, query: { size: 100 } }), toCatalogActivity).data,
+  });

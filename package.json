@@ -18,6 +18,7 @@
     "@fontsource/plus-jakarta-sans": "^5.3.0",
     "@phosphor-icons/react": "^2.1.10",
     "@tanstack/react-query": "^5.108.4",
+    "country-to-currency": "^3.0.2",
     "d3-geo": "^3.1.2",
     "firebase": "^13.4.0",
     "i18n-iso-countries": "^7.14.0",

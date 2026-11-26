@@ -1,6 +1,6 @@
 import { useRef, useState, type KeyboardEvent } from 'react';
 import { Link, Navigate, useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import { ArrowLeft, CalendarBlank, Check, LinkSimple, MapPin, PencilSimple, Receipt, Trash, UsersThree, Wallet, MapTrifold } from '@phosphor-icons/react';
+import { ArrowLeft, CalendarBlank, Check, CloudSun, LinkSimple, MapPin, PencilSimple, Receipt, Trash, UsersThree, Wallet, MapTrifold } from '@phosphor-icons/react';
 import { errorMessage, ApiError } from '../lib/api';
 import { dateRange } from '../lib/format';
 import { useMe, useTrip, useTripMutations } from '../lib/queries';
@@ -10,12 +10,14 @@ import { OrcamentoTab } from '../components/OrcamentoTab';
 import { MembrosTab, ROLE_META } from '../components/MembrosTab';
 import { EditarViagemDialog } from '../components/EditarViagemDialog';
 import { MapaTab } from '../components/MapaTab';
+import { ClimaTab } from '../components/ClimaTab';
 import { inviteLink } from '../lib/invite';
 import { tripPeople } from '../lib/members';
 
 const TABS = [
   { id: 'roteiro', label: 'Roteiro', icon: MapTrifold },
   { id: 'mapa', label: 'Mapa', icon: MapPin },
+  { id: 'clima', label: 'Clima e câmbio', icon: CloudSun },
   { id: 'orcamento', label: 'Orçamento', icon: Wallet },
   { id: 'despesas', label: 'Despesas', icon: Receipt },
   { id: 'membros', label: 'Membros', icon: UsersThree },
@@ -120,6 +122,7 @@ export function Viagem() {
       <div role="tabpanel" id="painel-aba" aria-labelledby={`tab-${tab}`}>
         {tab === 'roteiro' && <Roteiro trip={trip} canEdit={canEdit} />}
         {tab === 'mapa' && <MapaTab trip={trip} />}
+        {tab === 'clima' && <ClimaTab trip={trip} />}
         {tab === 'orcamento' && <OrcamentoTab trip={trip} canEdit={canEdit} />}
         {tab === 'membros' && <MembrosTab trip={trip} meId={me.data?.id} />}
         {tab === 'despesas' && (

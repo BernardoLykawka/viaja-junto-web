@@ -1,6 +1,8 @@
 /** Modelos internos do app. A API ainda fala português (issue #39); a tradução fica em lib/adapters.ts. */
 export type TripStatus = 'PLANNING' | 'CONFIRMED' | 'COMPLETED';
 export type Role = 'OWNER' | 'EDITOR' | 'VIEWER';
+/** Situação de uma atividade no roteiro (StatusAtividade no backend). */
+export type ActivityStatus = 'PENDING' | 'CONFIRMED' | 'DONE';
 
 export interface User {
   id: number;
@@ -62,6 +64,7 @@ export interface Activity {
   catalogId: number | null;
   photoUrl: string | null;
   description: string | null;
+  status: ActivityStatus;
   name: string;
   type: string | null;
   place: string | null;

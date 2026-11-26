@@ -6,6 +6,9 @@ import { money } from '../lib/format';
 import { useAddCatalogActivityToTrip, useTripDestinations, useTrips } from '../lib/queries';
 import type { CatalogActivity, Place } from '../lib/types';
 import { Alert, Button, Dialog, Field } from './ui';
+import { ACTIVITY_STATUS_META, ACTIVITY_STATUSES } from '../lib/activityStatus';
+import { ACTIVITY_STATUS_TO_API } from '../lib/adapters';
+import type { ActivityStatus } from '../lib/types';
 
 const NEW = 'novo';
 
@@ -24,6 +27,8 @@ export function AddToTripDialog({ open, onClose, place, activity }: { open: bool
   const [time, setTime] = useState('');
   const [nightsCount, setNightsCount] = useState('1');
   const [cost, setCost] = useState('');
+  const [status, setStatus] = useState<ActivityStatus>('PENDING');
+  const [notes, setNotes] = useState('');
   const add = useAddCatalogActivityToTrip();
   const trip = editable.find((t) => String(t.id) === tripId);
 
@@ -34,6 +39,8 @@ export function AddToTripDialog({ open, onClose, place, activity }: { open: bool
     setTime('');
     setNightsCount('1');
     setCost(activity.averagePrice != null ? String(activity.averagePrice) : '');
+    setStatus('PENDING');
+    setNotes('');
     add.reset();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, editable.length]);
@@ -66,6 +73,9 @@ export function AddToTripDialog({ open, onClose, place, activity }: { open: bool
           dataHorario: date ? `${date}T${time || (lodging ? '14:00' : '09:00')}:00` : null,
           duracaoMinutos: lodging ? n * 1440 : null,
           custoPrevisto: cost ? Number(cost) : null,
+          status: ACTIVITY_STATUS_TO_API[status],
+          // Sem observação própria, o backend copia a descrição do catálogo.
+          descricao: notes.trim() || null,
         },
       },
       { onSuccess: () => undefined },
@@ -118,6 +128,14 @@ export function AddToTripDialog({ open, onClose, place, activity }: { open: bool
               </Field>
             )}
           </div>
+          <Field label="Situação" htmlFor="at-status" helper={lodging ? 'Confirmada = reserva feita.' : 'Confirmada = ingresso comprado ou reserva feita.'}>
+            <select id="at-status" value={status} onChange={(e) => setStatus(e.target.value as ActivityStatus)}>
+              {ACTIVITY_STATUSES.map((st) => <option key={st} value={st}>{ACTIVITY_STATUS_META[st].label}</option>)}
+            </select>
+          </Field>
+          <Field label="Observações" htmlFor="at-notes" helper="Opcional: número da reserva, o que levar, ponto de encontro…">
+            <textarea id="at-notes" maxLength={1000} value={notes} onChange={(e) => setNotes(e.target.value)} />
+          </Field>
           <Field label={lodging ? 'Custo total da estadia (R$)' : 'Valor previsto (R$)'} htmlFor="at-cost">
             <input id="at-cost" type="number" inputMode="decimal" min={0} step="0.01" value={cost} onChange={(e) => setCost(e.target.value)} />
           </Field>

@@ -63,7 +63,7 @@ describe('travelStats', () => {
   });
   let n = 0;
   const dest = (tripId: number, catalogId: number | null, name: string, isoCode: string | null = null): TripDestination => ({ id: ++n, tripId, catalogId, name, country: null, isoCode, photoUrl: null, arrivalDate: null, departureDate: null, order: null });
-  const act = (destinationId: number, name: string, type: string, durationMinutes: number | null = null, catalogId: number | null = null): Activity => ({ id: ++n, destinationId, catalogId, name, type, place: null, dateTime: null, durationMinutes, estimatedCost: null, photoUrl: null, description: null });
+  const act = (destinationId: number, name: string, type: string, durationMinutes: number | null = null, catalogId: number | null = null): Activity => ({ id: ++n, destinationId, catalogId, name, type, place: null, dateTime: null, durationMinutes, estimatedCost: null, photoUrl: null, description: null, status: 'DONE' });
   const place = (id: number, category: string): Place => ({ id, name: '', city: null, country: '', isoCode: null, description: null, category, photoUrl: null, averageRating: null, reviewCount: 0 });
 
   const rio = dest(1, 2, 'Rio de Janeiro', 'BRA');

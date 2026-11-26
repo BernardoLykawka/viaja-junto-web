@@ -31,3 +31,16 @@ describe('sizedPhoto', () => {
     expect(sizedPhoto('https://images.unsplash.com/photo-1?w=300')).toBe('https://images.unsplash.com/photo-1?w=300');
   });
 });
+
+import { duration, endTime } from './format';
+
+describe('duração da atividade', () => {
+  it('formata minutos e calcula o término', () => {
+    expect(duration(90)).toBe('1 h 30 min');
+    expect(duration(120)).toBe('2 h');
+    expect(duration(45)).toBe('45 min');
+    expect(duration(null)).toBeNull();
+    expect(endTime('09:00', 150)).toBe('11:30');
+    expect(endTime('23:30', 90)).toBe('01:00');
+  });
+});

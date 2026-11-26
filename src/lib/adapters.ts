@@ -1,10 +1,12 @@
-import type { Activity, Budget, CatalogActivity, Member, Page, Place, Review, Role, Trip, TripDestination, TripStatus, User } from './types';
+import type { Activity, ActivityStatus, Budget, CatalogActivity, Member, Page, Place, Review, Role, Trip, TripDestination, TripStatus, User } from './types';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 type Raw = any;
 
 const STATUS: Record<string, TripStatus> = { EM_PLANEJAMENTO: 'PLANNING', CONFIRMADA: 'CONFIRMED', CONCLUIDA: 'COMPLETED' };
 const ROLE: Record<string, Role> = { CRIADOR: 'OWNER', EDITOR: 'EDITOR', VISUALIZADOR: 'VIEWER' };
+const ACTIVITY_STATUS: Record<string, ActivityStatus> = { PENDENTE: 'PENDING', CONFIRMADA: 'CONFIRMED', CONCLUIDA: 'DONE' };
+export const ACTIVITY_STATUS_TO_API: Record<ActivityStatus, string> = { PENDING: 'PENDENTE', CONFIRMED: 'CONFIRMADA', DONE: 'CONCLUIDA' };
 export const STATUS_TO_API: Record<TripStatus, string> = { PLANNING: 'EM_PLANEJAMENTO', CONFIRMED: 'CONFIRMADA', COMPLETED: 'CONCLUIDA' };
 export const ROLE_TO_API: Record<Role, string> = { OWNER: 'CRIADOR', EDITOR: 'EDITOR', VIEWER: 'VISUALIZADOR' };
 
@@ -60,6 +62,7 @@ export const toActivity = (r: Raw): Activity => ({
   catalogId: r.catalogoAtividadeId ?? null,
   photoUrl: r.fotoUrl ?? null,
   description: r.descricao ?? null,
+  status: ACTIVITY_STATUS[r.status] ?? 'PENDING',
   name: r.nome,
   type: r.tipo ?? null,
   place: r.local ?? null,

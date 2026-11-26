@@ -49,6 +49,13 @@ Cada destino tem atividades: passeios (Cristo Redentor), cultura, gastronomia, t
 - **Países visitados** vêm das viagens concluídas. `GET /places/visited-countries` conta também viagens planejadas,
   por isso o painel não usa essa rota.
 
+## Serviços externos (sem chave)
+
+- **Clima:** [Open-Meteo](https://open-meteo.com) (localização da cidade, previsão de até 16 dias e histórico).
+  Datas além da previsão mostram o "clima típico": as mesmas datas no ano anterior.
+- **Câmbio:** [ExchangeRate-API](https://www.exchangerate-api.com) (`open.er-api.com`, cotação diária a partir do real).
+- Só o nome da cidade e as datas saem do navegador. A moeda de cada país vem do pacote `country-to-currency`.
+
 ## Estado atual
 
 | Tela | Rotas da API | Situação |

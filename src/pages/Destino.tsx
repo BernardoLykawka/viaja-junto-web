@@ -10,6 +10,7 @@ import { Alert, EmptyState, Skeleton } from '../components/ui';
 import { CatalogActivityCard } from '../components/CatalogActivityCard';
 import { ReviewForm, ReviewList } from '../components/Reviews';
 import { LoginToAct } from '../components/LoginToAct';
+import { TravelInfoCard } from '../components/TravelInfo';
 import { ReviewGate } from '../components/ReviewGate';
 import { hasVisitedPlace, useTravelHistory } from '../lib/travelHistory';
 import type { Icon } from '@phosphor-icons/react';
@@ -63,6 +64,10 @@ export function Destino() {
       </header>
 
       {p.description && <p className="type-body-lg" style={{ marginTop: 'var(--spacing-lg)', maxWidth: '70ch' }}>{p.description}</p>}
+
+      <div style={{ marginTop: 'var(--spacing-2xl)' }}>
+        <TravelInfoCard title={`Clima e câmbio em ${p.name}`} city={p.city ?? p.name} countryA3={p.isoCode} countryName={p.country} />
+      </div>
 
       <ActivityGrid id="o-que-fazer" title="O que fazer" icon={Compass} items={todo} loading={loadingActivities}
         empty={`Ainda não há passeios cadastrados em ${p.name}.`} error={byCity.error ?? byName.error} />

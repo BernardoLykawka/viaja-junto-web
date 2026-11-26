@@ -10,7 +10,7 @@ const dest = (id: number, name: string, isoCode: string | null, catalogId: numbe
   id, tripId: null, name, isoCode, catalogId, country, photoUrl: null, arrivalDate: null, departureDate: null, order: null,
 });
 const act = (id: number, catalogId: number | null): Activity => ({
-  id, catalogId, destinationId: 0, name: '', type: null, place: null, dateTime: null, durationMinutes: null, estimatedCost: null, photoUrl: null, description: null,
+  id, catalogId, destinationId: 0, name: '', type: null, place: null, dateTime: null, durationMinutes: null, estimatedCost: null, photoUrl: null, description: null, status: 'DONE',
 });
 
 describe('buildHistory', () => {

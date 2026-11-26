@@ -24,4 +24,20 @@ export function daysUntil(iso: string, today = new Date()): number {
 export const initials = (name: string) =>
   name.split(/\s+/).filter(Boolean).slice(0, 2).map((p) => p[0]!.toUpperCase()).join('');
 
+/** Duração em minutos para texto: 90 -> "1 h 30 min", 120 -> "2 h", 45 -> "45 min". */
+export function duration(min: number | null | undefined): string | null {
+  if (!min || min <= 0) return null;
+  const h = Math.floor(min / 60);
+  const m = min % 60;
+  return [h ? `${h} h` : '', m ? `${m} min` : ''].filter(Boolean).join(' ');
+}
+
+/** Horário de término: "09:00" + 150 min -> "11:30" (passa da meia-noite com o dia seguinte implícito). */
+export function endTime(start: string, min: number | null | undefined): string | null {
+  if (!start || !min) return null;
+  const [h, m] = start.split(':').map(Number);
+  const total = (h! * 60 + m! + min) % 1440;
+  return `${String(Math.floor(total / 60)).padStart(2, '0')}:${String(total % 60).padStart(2, '0')}`;
+}
+
 export const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
