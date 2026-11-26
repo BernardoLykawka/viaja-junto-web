@@ -1,4 +1,4 @@
-import { useRef, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { CaretLeft, CaretRight, MapPin, Star, Users } from '@phosphor-icons/react';
 import { rating } from '../lib/format';
@@ -32,19 +32,42 @@ export const TravelersPill = ({ count }: { count: number }) => (
   </span>
 );
 
-/** Carrossel com scroll-snap; setas só no desktop (CSS), sempre focáveis por teclado. */
+/**
+ * Carrossel com scroll-snap. As setas só aparecem quando há para onde rolar: a da esquerda depois de sair
+ * do começo, a da direita enquanto houver cards escondidos à direita (no celular ficam sempre ocultas, via CSS).
+ */
 export function Carousel({ label, wide, children }: { label: string; wide?: boolean; children: ReactNode }) {
   const track = useRef<HTMLUListElement>(null);
+  const [edges, setEdges] = useState({ start: true, end: true });
+
+  useEffect(() => {
+    const el = track.current;
+    if (!el) return;
+    const update = () => {
+      // 4 px de folga para arredondamentos do navegador.
+      setEdges({ start: el.scrollLeft <= 4, end: el.scrollLeft + el.clientWidth >= el.scrollWidth - 4 });
+    };
+    update();
+    el.addEventListener('scroll', update, { passive: true });
+    // Largura da tela ou quantidade de cards mudou (o jsdom dos testes não tem ResizeObserver).
+    const ro = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(update);
+    ro?.observe(el);
+    return () => {
+      el.removeEventListener('scroll', update);
+      ro?.disconnect();
+    };
+  }, [children]);
+
   const scroll = (dir: 1 | -1) => track.current?.scrollBy({ left: dir * track.current.clientWidth * 0.8, behavior: 'smooth' });
   return (
     <div className="carousel" role="region" aria-label={label}>
-      <button type="button" className="carousel-arrow prev" aria-label="Anterior" onClick={() => scroll(-1)}>
+      <button type="button" className="carousel-arrow prev" aria-label="Anterior" onClick={() => scroll(-1)} hidden={edges.start}>
         <CaretLeft size={20} aria-hidden />
       </button>
       <ul ref={track} className={`track ${wide ? 'wide' : ''}`}>
         {children}
       </ul>
-      <button type="button" className="carousel-arrow next" aria-label="Próximo" onClick={() => scroll(1)}>
+      <button type="button" className="carousel-arrow next" aria-label="Próximo" onClick={() => scroll(1)} hidden={edges.end}>
         <CaretRight size={20} aria-hidden />
       </button>
     </div>

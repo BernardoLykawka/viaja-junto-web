@@ -4,6 +4,7 @@ import { useMembers, useTripMutations } from '../lib/queries';
 import type { Role, Trip } from '../lib/types';
 import { Alert, Avatar, Button, Skeleton } from './ui';
 import { inviteLink } from '../lib/invite';
+import { withOwner } from '../lib/members';
 
 export const ROLE_META: Record<Role, { label: string; icon: typeof Crown }> = {
   OWNER: { label: 'Dono(a)', icon: Crown },
@@ -24,9 +25,9 @@ export function MembrosTab({ trip, meId }: { trip: Trip; meId: number | undefine
       {isLoading ? <Skeleton style={{ height: 160 }} /> : (
         <div className="card">
           <ul className="list">
-            {data?.map((m) => {
+            {withOwner(trip.owner, data ?? []).map((m) => {
               const meta = ROLE_META[m.role];
-              const canManage = isOwner && m.role !== 'OWNER' && m.user.id !== meId;
+              const canManage = isOwner && m.role !== 'OWNER' && m.user.id !== meId && m.id > 0;
               return (
                 <li key={m.id}>
                   <Avatar name={m.user.name} src={m.user.avatarUrl} />

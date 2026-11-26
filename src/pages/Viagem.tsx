@@ -11,6 +11,7 @@ import { MembrosTab, ROLE_META } from '../components/MembrosTab';
 import { EditarViagemDialog } from '../components/EditarViagemDialog';
 import { MapaTab } from '../components/MapaTab';
 import { inviteLink } from '../lib/invite';
+import { tripPeople } from '../lib/members';
 
 const TABS = [
   { id: 'roteiro', label: 'Roteiro', icon: MapTrifold },
@@ -89,7 +90,7 @@ export function Viagem() {
         </div>
         <div className="hero-side">
           <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-sm-plus)' }}>
-            <AvatarStack people={trip.members.map((m) => m.user)} />
+            <AvatarStack people={tripPeople(trip).map((m) => m.user)} />
             {canEdit && (
               <button type="button" className="button-pill button-pill-light type-label-md" onClick={() => setEditing(true)}>
                 <PencilSimple size={20} aria-hidden /> Editar

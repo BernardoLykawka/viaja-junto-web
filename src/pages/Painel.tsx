@@ -18,6 +18,7 @@ import { Carousel, PhotoCard, RatingPill } from '../components/PhotoCard';
 import { NovaViagemDialog, type TripDraft } from '../components/NovaViagemDialog';
 import { FadeImg } from '../components/FadeImg';
 import { HeroPlane } from '../components/HeroPlane';
+import { tripPeople } from '../lib/members';
 
 /** Próxima viagem = a de início futuro mais próximo; sem nenhuma futura, a que está em andamento. */
 function pickNextTrip(trips: Trip[]): Trip | undefined {
@@ -47,7 +48,7 @@ export function Painel() {
   const openDialog = (draft?: TripDraft) => (authed ? setDialog({ open: true, draft }) : navigate('/entrar', { state: { from: '/' } }));
 
   const firstName = me.data?.name.split(' ')[0];
-  const companions = new Set(list.flatMap((t) => t.members.map((m) => m.user.id)).filter((id) => id !== me.data?.id)).size;
+  const companions = new Set(list.flatMap((t) => tripPeople(t).map((m) => m.user.id)).filter((id) => id !== me.data?.id)).size;
   const ongoing = list.filter((t) => t.status !== 'COMPLETED').length;
   const tripsError = trips.error ?? top.error;
 
@@ -71,7 +72,7 @@ export function Painel() {
                 </span>
               </div>
               <div className="top">
-                <AvatarStack people={next.members.map((m) => m.user)} />
+                <AvatarStack people={tripPeople(next).map((m) => m.user)} />
               </div>
             </Link>
           )}

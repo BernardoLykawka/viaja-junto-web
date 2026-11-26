@@ -366,3 +366,24 @@ body.discovery .app-bar { position: absolute; left: 0; right: 0; background: tra
 .leaflet-tooltip { font-family: var(--font-body-sm), sans-serif; }
 @media (max-width: 639px) { .trip-map { height: 320px; } }
 .avatar-img { object-fit: cover; padding: 0; }
+
+/* Linhas do roteiro com a foto do catálogo; o card inteiro é clicável quando vem do catálogo. */
+.activity { grid-template-columns: 64px 56px 1fr auto; position: relative; }
+.activity.no-time, .activity.stay { grid-template-columns: 56px 1fr auto; }
+.activity-thumb { width: 56px; height: 56px; border-radius: var(--radius-sm); object-fit: cover; background: var(--color-neutral); display: block; }
+.cat-icon.activity-thumb { display: grid; place-items: center; background: var(--color-success-container); }
+.activity-link { color: var(--color-on-surface); text-decoration: none; }
+.activity-link::after { content: ""; position: absolute; inset: 0; border-radius: var(--radius-sm); }
+.activity-link:hover { color: var(--color-primary-strong); text-decoration: underline; text-underline-offset: 3px; }
+.activity-link:focus-visible { outline: none; }
+.activity-link:focus-visible::after { outline: 3px solid var(--color-primary); outline-offset: 2px; }
+.activity.is-link:hover { box-shadow: var(--shadow-sm); border-color: var(--color-secondary); }
+.activity .right { position: relative; z-index: 1; }
+@media (max-width: 639px) {
+  .activity { grid-template-columns: 48px 1fr auto; }
+  .activity.no-time, .activity.stay { grid-template-columns: 48px 1fr auto; }
+  .activity .time { grid-column: 2 / 4; grid-row: 2; }
+  .activity-thumb { width: 48px; height: 48px; }
+}
+.stop-link { color: inherit; text-decoration: none; }
+.stop-link:hover { text-decoration: underline; text-underline-offset: 4px; text-decoration-color: var(--color-secondary); }

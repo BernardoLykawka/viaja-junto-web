@@ -7,6 +7,7 @@ import { dateLong, dateRange, dayHeading, money, timeOf } from '../lib/format';
 import { useCatalogActivities, usePlaces, useTripActivities, useTripDestinations, useTripMutations } from '../lib/queries';
 import type { Activity, Trip, TripDestination } from '../lib/types';
 import { Alert, Button, Dialog, EmptyState, Field, Skeleton } from './ui';
+import { FadeImg } from './FadeImg';
 
 export function Roteiro({ trip, canEdit }: { trip: Trip; canEdit: boolean }) {
   const destinations = useTripDestinations(trip.id);
@@ -59,11 +60,17 @@ function Stop({ index, stop, activities, canEdit, onAdd, onRemoveStop, onRemoveA
       <div className="stack-sm" style={{ gap: 'var(--spacing-md)' }}>
         <div className="stop-head" style={{ marginBottom: 0 }}>
           <div>
-            <h3 className="type-headline-sm card-title">{stop.name}{stop.country ? `, ${stop.country}` : ''}</h3>
+            <h3 className="type-headline-sm card-title">
+              {/* Destino do catálogo: o nome abre a página dele (passeios, hospedagens e avaliações). */}
+              {stop.catalogId ? (
+                <Link to={`/destinos/${stop.catalogId}`} className="stop-link">{stop.name}{stop.country ? `, ${stop.country}` : ''}</Link>
+              ) : (
+                <>{stop.name}{stop.country ? `, ${stop.country}` : ''}</>
+              )}
+            </h3>
             <p className="type-body-sm muted meta"><MapPin size={16} aria-hidden /> {dateRange(stop.arrivalDate, stop.departureDate)}</p>
           </div>
           <div style={{ display: 'flex', gap: 'var(--spacing-sm)', flexWrap: 'wrap', alignItems: 'center' }}>
-            {stop.catalogId && <Link to={`/destinos/${stop.catalogId}`} className="type-label-md inline-link"><Compass size={20} aria-hidden /> Explorar {stop.name}</Link>}
             {canEdit && <Button variant="compact" icon={Trash} aria-label={`Remover destino ${stop.name}`} onClick={onRemoveStop} />}
           </div>
         </div>
@@ -80,17 +87,8 @@ function Stop({ index, stop, activities, canEdit, onAdd, onRemoveStop, onRemoveA
               {stays.map((a) => {
                 const n = nights(a.durationMinutes);
                 return (
-                  <li key={a.id} className="card-compact activity stay">
-                    <span className="cat-icon"><Bed size={20} aria-hidden /></span>
-                    <div>
-                      <p className="type-title-md">{a.name}</p>
-                      <p className="type-body-sm muted">{[a.dateTime ? `Check-in ${dateLong(a.dateTime)}` : 'Data a definir', n ? (n === 1 ? '1 noite' : `${n} noites`) : null, a.place].filter(Boolean).join(' · ')}</p>
-                    </div>
-                    <div className="right">
-                      <span className="type-numeric-md">{a.estimatedCost != null ? money(a.estimatedCost) : 'Sem valor'}</span>
-                      {remove(a)}
-                    </div>
-                  </li>
+                  <ActivityRow key={a.id} a={a} lodging remove={remove(a)}
+                    detail={[a.dateTime ? `Check-in ${dateLong(a.dateTime)}` : 'Data a definir', n ? (n === 1 ? '1 noite' : `${n} noites`) : null, a.place].filter(Boolean).join(' · ')} />
                 );
               })}
             </ul>
@@ -109,23 +107,10 @@ function Stop({ index, stop, activities, canEdit, onAdd, onRemoveStop, onRemoveA
               <div key={day || 'sem-data'} className="stack-sm">
                 <h5 className="type-label-md">{day ? dayHeading(day) : 'Sem data'}</h5>
                 <ul className="activities">
-                  {todo.filter((a) => (a.dateTime ?? '').slice(0, 10) === day).map((a) => {
-                    const I = categoryIcon(a.type);
-                    return (
-                      <li key={a.id} className="card-compact activity">
-                        <span className="time type-numeric-md">{timeOf(a.dateTime)}</span>
-                        <span className="cat-icon"><I size={20} aria-hidden /></span>
-                        <div>
-                          <p className="type-title-md">{a.name}</p>
-                          <p className="type-body-sm muted">{[normalizeType(a.type) ?? a.type, a.place].filter(Boolean).join(' · ')}</p>
-                        </div>
-                        <div className="right">
-                          <span className="type-numeric-md">{a.estimatedCost != null ? money(a.estimatedCost) : 'Sem valor'}</span>
-                          {remove(a)}
-                        </div>
-                      </li>
-                    );
-                  })}
+                  {todo.filter((a) => (a.dateTime ?? '').slice(0, 10) === day).map((a) => (
+                      <ActivityRow key={a.id} a={a} time={timeOf(a.dateTime)} remove={remove(a)}
+                        detail={[normalizeType(a.type) ?? a.type, a.place].filter(Boolean).join(' · ')} />
+                  ))}
                 </ul>
               </div>
             ))
@@ -133,6 +118,37 @@ function Stop({ index, stop, activities, canEdit, onAdd, onRemoveStop, onRemoveA
         </section>
       </div>
     </article>
+  );
+}
+
+/**
+ * Linha de atividade ou hospedagem do roteiro. Vinda do catálogo, mostra a foto dele e o card inteiro abre a
+ * página da atividade (/atividades/{id}); o botão de remover fica por cima do link.
+ */
+export function ActivityRow({ a, detail, time, lodging, remove }: { a: Activity; detail: string; time?: string; lodging?: boolean; remove: React.ReactNode }) {
+  const I = lodging ? Bed : categoryIcon(a.type);
+  const showTime = !lodging && !!time;
+  return (
+    <li className={`card-compact activity ${showTime ? '' : 'no-time'} ${a.catalogId != null ? 'is-link' : ''}`}>
+      {showTime && <span className="time type-numeric-md">{time}</span>}
+      {a.photoUrl ? (
+        <FadeImg className="activity-thumb" src={a.photoUrl} width={160} alt="" loading="lazy" />
+      ) : (
+        <span className="cat-icon activity-thumb"><I size={22} aria-hidden /></span>
+      )}
+      <div style={{ minWidth: 0 }}>
+        {a.catalogId != null ? (
+          <Link to={`/atividades/${a.catalogId}`} className="type-title-md activity-link">{a.name}</Link>
+        ) : (
+          <p className="type-title-md">{a.name}</p>
+        )}
+        <p className="type-body-sm muted">{detail}</p>
+      </div>
+      <div className="right">
+        <span className="type-numeric-md">{a.estimatedCost != null ? money(a.estimatedCost) : 'Sem valor'}</span>
+        {remove}
+      </div>
+    </li>
   );
 }
 

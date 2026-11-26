@@ -1,6 +1,7 @@
 import { dateRange } from '../lib/format';
 import { useTripDestinations } from '../lib/queries';
 import type { Trip } from '../lib/types';
+import { tripPeople } from '../lib/members';
 import { PhotoCard, TravelersPill } from './PhotoCard';
 import { StatusBadge } from './ui';
 
@@ -16,7 +17,7 @@ export function TripCard({ trip }: { trip: Trip }) {
       title={trip.name}
       subtitle={dateRange(trip.startDate, trip.endDate)}
       badge={<StatusBadge status={trip.status} />}
-      corner={<TravelersPill count={trip.members.length} />}
+      corner={<TravelersPill count={tripPeople(trip).length} />}
     />
   );
 }
