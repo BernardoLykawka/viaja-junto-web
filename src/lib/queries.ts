@@ -1,8 +1,8 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api } from './api';
 import { useAuth } from './auth';
 import { ROLE_TO_API, STATUS_TO_API, toActivity, toBudget, toCatalogActivity, toDestination, toMember, toPage, toPlace, toReview, toTrip, toUser } from './adapters';
-import type { Role, TripStatus } from './types';
+import type { MapMarker, Page, Role, TripStatus } from './types';
 import { sameCity } from './activityTypes';
 
 export const useMe = () => {
@@ -10,8 +10,10 @@ export const useMe = () => {
   return useQuery({ queryKey: ['me'], enabled: status === 'authed', queryFn: async () => toUser(await api('/users/me')) });
 };
 
-export const useTrips = () =>
-  useQuery({ queryKey: ['trips'], queryFn: async () => toPage(await api('/trips', { query: { limit: 100 } }), toTrip) });
+export const useTrips = () => {
+  const { status } = useAuth();
+  return useQuery({ queryKey: ['trips'], enabled: status === 'authed', queryFn: async () => toPage(await api('/trips', { query: { limit: 100 } }), toTrip) });
+};
 
 export const useTrip = (id: number) =>
   useQuery({ queryKey: ['trip', id], queryFn: async () => toTrip(await api(`/trips/${id}`)) });
@@ -22,10 +24,10 @@ export const useTopPlaces = () =>
     queryFn: async () => ((await api<unknown[]>('/places/featured', { anonymous: true })) ?? []).map(toPlace),
   });
 
-export const usePlaces = (q: string) =>
+export const usePlaces = (q: string, categoria: string | null = null) =>
   useQuery({
-    queryKey: ['places', 'search', q],
-    queryFn: async () => toPage(await api('/places', { anonymous: true, query: { q, size: 24 } }), toPlace),
+    queryKey: ['places', 'search', q, categoria],
+    queryFn: async () => toPage(await api('/places', { anonymous: true, query: { q, categoria, size: 48 } }), toPlace),
   });
 
 export const useVisitedCountries = () =>
@@ -91,7 +93,12 @@ export function useTripMutations(tripId: number) {
 export function useCreateTrip() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async (body: object) => toTrip(await api('/trips', { method: 'POST', body })),
+    /** Cria a viagem e, se veio um destino do catálogo, já o coloca no roteiro. */
+    mutationFn: async ({ trip, place }: { trip: object; place?: object }) => {
+      const created = toTrip(await api('/trips', { method: 'POST', body: trip }));
+      if (place) await api(`/trips/${created.id}/destinations`, { method: 'POST', body: place });
+      return created;
+    },
     onSuccess: () => qc.invalidateQueries({ queryKey: ['trips'] }),
   });
 }
@@ -99,11 +106,6 @@ export function useCreateTrip() {
 export const usePlace = (id: number) =>
   useQuery({ queryKey: ['place', id], queryFn: async () => toPlace(await api(`/places/${id}`, { anonymous: true })) });
 
-export const usePlaceReviews = (id: number) =>
-  useQuery({
-    queryKey: ['reviews', id],
-    queryFn: async () => toPage(await api(`/places/${id}/reviews`, { anonymous: true, query: { limit: 50 } }), toReview),
-  });
 
 /**
  * Atividades do catálogo de uma cidade (público). A busca `q` da API casa nome ou cidade; o filtro exato por
@@ -121,11 +123,6 @@ export const useCatalogActivities = (city: string | null | undefined) =>
 export const useCatalogActivity = (id: number) =>
   useQuery({ queryKey: ['catalog-activity', id], queryFn: async () => toCatalogActivity(await api(`/activities/catalog/${id}`, { anonymous: true })) });
 
-export const useActivityReviews = (placeId: number, activityId: number) =>
-  useQuery({
-    queryKey: ['activity-reviews', activityId],
-    queryFn: async () => toPage(await api(`/places/${placeId}/activities/${activityId}/reviews`, { anonymous: true, query: { size: 50 } }), toReview),
-  });
 
 export function useCreateActivityReview(placeId: number, activityId: number) {
   const qc = useQueryClient();
@@ -200,3 +197,61 @@ export function useUpdateMe() {
     onSuccess: (me) => qc.setQueryData(['me'], me),
   });
 }
+
+export const useTopActivities = () =>
+  useQuery({
+    queryKey: ['activity-catalog', 'featured'],
+    queryFn: async () => ((await api<unknown[]>('/activities/catalog/featured', { anonymous: true })) ?? []).map(toCatalogActivity),
+  });
+
+
+/** Marcadores do mapa da viagem: o backend acha as coordenadas no Google Places (com cache). */
+export const useTripMap = (tripId: number) =>
+  useQuery({
+    queryKey: ['trip-map', tripId],
+    staleTime: 5 * 60_000,
+    queryFn: async () => {
+      const r = await api<{ markers?: { type: string; id: string; label: string; latitude: number; longitude: number }[] }>(`/trips/${tripId}/map`);
+      return (r.markers ?? [])
+        .filter((m) => Number.isFinite(m.latitude) && Number.isFinite(m.longitude))
+        .map((m): MapMarker => ({ type: m.type === 'activity' ? 'activity' : 'destination', id: m.id, label: m.label, lat: m.latitude, lng: m.longitude }));
+    },
+  });
+
+/**
+ * Lista paginada com "Carregar mais". `fetchPage(i)` recebe o índice 0-based da página; cada rota converte
+ * para o que espera (o Page do Spring usa `page` 0-based, o envelope do contrato usa `page` 1-based).
+ */
+export function usePaged<T>(key: unknown[], fetchPage: (index: number) => Promise<Page<T>>, enabled = true) {
+  const q = useInfiniteQuery({
+    queryKey: key,
+    enabled,
+    initialPageParam: 0,
+    queryFn: ({ pageParam }) => fetchPage(pageParam),
+    getNextPageParam: (last, _all, lastParam) => (last.hasMore ? lastParam + 1 : undefined),
+  });
+  return {
+    ...q,
+    items: q.data?.pages.flatMap((p) => p.data) ?? [],
+    totalItems: q.data?.pages[0]?.totalItems,
+  };
+}
+export type Paged<T> = ReturnType<typeof usePaged<T>>;
+
+const PAGE = 24;
+
+export const usePlacesPaged = (q: string, categoria: string | null) =>
+  usePaged(['places', 'paged', q, categoria], async (i) =>
+    toPage(await api('/places', { anonymous: true, query: { q, categoria, page: i, size: PAGE } }), toPlace));
+
+export const useActivitiesPaged = (q: string, tipo: string | null) =>
+  usePaged(['activity-catalog', 'paged', q, tipo], async (i) =>
+    toPage(await api('/activities/catalog', { anonymous: true, query: { q, tipo, page: i, size: PAGE } }), toCatalogActivity));
+
+export const usePlaceReviewsPaged = (placeId: number) =>
+  usePaged(['reviews', placeId], async (i) =>
+    toPage(await api(`/places/${placeId}/reviews`, { anonymous: true, query: { page: i + 1, limit: 10 } }), toReview));
+
+export const useActivityReviewsPaged = (placeId: number, activityId: number) =>
+  usePaged(['activity-reviews', activityId], async (i) =>
+    toPage(await api(`/places/${placeId}/activities/${activityId}/reviews`, { anonymous: true, query: { page: i, size: 10 } }), toReview));

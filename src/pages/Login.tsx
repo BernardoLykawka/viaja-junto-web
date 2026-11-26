@@ -22,7 +22,7 @@ export function Login() {
   const [busy, setBusy] = useState(false);
   const [expired] = useState(consumeExpiredNotice);
 
-  if (status === 'authed') return <Navigate to={(loc.state as { from?: string } | null)?.from ?? '/viagens'} replace />;
+  if (status === 'authed') return <Navigate to={(loc.state as { from?: string } | null)?.from ?? '/'} replace />;
 
   async function google() {
     setBusy(true);

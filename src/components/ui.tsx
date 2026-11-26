@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, useRef, type ButtonHTMLAttributes, type ReactNode } from 'react';
+import { forwardRef, useEffect, useRef, useState, type ButtonHTMLAttributes, type ReactNode } from 'react';
 import { ArrowRight, CheckCircle, CircleNotch, FlagCheckered, Info, Warning, WarningCircle, X, type Icon } from '@phosphor-icons/react';
 import { initials } from '../lib/format';
 import type { TripStatus } from '../lib/types';
@@ -39,21 +39,27 @@ export function PillButton({ children, ...rest }: ButtonHTMLAttributes<HTMLButto
   );
 }
 
-export function Avatar({ name, size = 'md' }: { name: string; size?: 'sm' | 'md' }) {
+/** Foto do usuário (a do Google, via avatarUrl) com as iniciais como reserva se não houver ou não carregar. */
+export function Avatar({ name, src, size = 'md' }: { name: string; src?: string | null; size?: 'sm' | 'md' }) {
+  const [broken, setBroken] = useState(false);
+  const cls = `avatar ${size === 'sm' ? 'sm' : ''} type-label-md`;
+  if (src && !broken) {
+    return <img className={`${cls} avatar-img`} src={src} alt={name} title={name} referrerPolicy="no-referrer" onError={() => setBroken(true)} />;
+  }
   return (
-    <span className={`avatar ${size === 'sm' ? 'sm' : ''} type-label-md`} title={name} role="img" aria-label={name}>
+    <span className={cls} title={name} role="img" aria-label={name}>
       {initials(name)}
     </span>
   );
 }
 
-export function AvatarStack({ names, max = 4 }: { names: string[]; max?: number }) {
-  const shown = names.slice(0, max);
-  const extra = names.length - shown.length;
+export function AvatarStack({ people, max = 4 }: { people: { name: string; avatarUrl?: string | null }[]; max?: number }) {
+  const shown = people.slice(0, max);
+  const extra = people.length - shown.length;
   return (
     <div className="avatar-stack">
-      {shown.map((n, i) => (
-        <Avatar key={`${n}-${i}`} name={n} size="sm" />
+      {shown.map((p, i) => (
+        <Avatar key={`${p.name}-${i}`} name={p.name} src={p.avatarUrl} size="sm" />
       ))}
       {extra > 0 && (
         <span className="avatar sm type-label-md" aria-label={`mais ${extra} pessoas`}>
@@ -136,6 +142,16 @@ export function Field({ label, error, helper, children, htmlFor }: { label: stri
           {helper}
         </p>
       ) : null}
+    </div>
+  );
+}
+
+/** "Carregar mais" de listas paginadas; some quando não há próxima página. */
+export function LoadMore({ hasMore, loading, onClick, label = 'Carregar mais' }: { hasMore: boolean; loading: boolean; onClick: () => void; label?: string }) {
+  if (!hasMore) return null;
+  return (
+    <div style={{ display: 'flex', justifyContent: 'center', marginTop: 'var(--spacing-lg)' }}>
+      <Button variant="secondary" busy={loading} onClick={onClick}>{label}</Button>
     </div>
   );
 }

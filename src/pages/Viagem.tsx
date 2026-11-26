@@ -1,6 +1,6 @@
 import { useRef, useState, type KeyboardEvent } from 'react';
 import { Link, Navigate, useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import { ArrowLeft, CalendarBlank, Check, LinkSimple, PencilSimple, Receipt, Trash, UsersThree, Wallet, MapTrifold } from '@phosphor-icons/react';
+import { ArrowLeft, CalendarBlank, Check, LinkSimple, MapPin, PencilSimple, Receipt, Trash, UsersThree, Wallet, MapTrifold } from '@phosphor-icons/react';
 import { errorMessage, ApiError } from '../lib/api';
 import { dateRange } from '../lib/format';
 import { useMe, useTrip, useTripMutations } from '../lib/queries';
@@ -9,10 +9,12 @@ import { Roteiro } from '../components/Roteiro';
 import { OrcamentoTab } from '../components/OrcamentoTab';
 import { MembrosTab, ROLE_META } from '../components/MembrosTab';
 import { EditarViagemDialog } from '../components/EditarViagemDialog';
+import { MapaTab } from '../components/MapaTab';
 import { inviteLink } from '../lib/invite';
 
 const TABS = [
   { id: 'roteiro', label: 'Roteiro', icon: MapTrifold },
+  { id: 'mapa', label: 'Mapa', icon: MapPin },
   { id: 'orcamento', label: 'Orçamento', icon: Wallet },
   { id: 'despesas', label: 'Despesas', icon: Receipt },
   { id: 'membros', label: 'Membros', icon: UsersThree },
@@ -87,7 +89,7 @@ export function Viagem() {
         </div>
         <div className="hero-side">
           <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-sm-plus)' }}>
-            <AvatarStack names={trip.members.map((m) => m.user.name)} />
+            <AvatarStack people={trip.members.map((m) => m.user)} />
             {canEdit && (
               <button type="button" className="button-pill button-pill-light type-label-md" onClick={() => setEditing(true)}>
                 <PencilSimple size={20} aria-hidden /> Editar
@@ -116,6 +118,7 @@ export function Viagem() {
 
       <div role="tabpanel" id="painel-aba" aria-labelledby={`tab-${tab}`}>
         {tab === 'roteiro' && <Roteiro trip={trip} canEdit={canEdit} />}
+        {tab === 'mapa' && <MapaTab trip={trip} />}
         {tab === 'orcamento' && <OrcamentoTab trip={trip} canEdit={canEdit} />}
         {tab === 'membros' && <MembrosTab trip={trip} meId={me.data?.id} />}
         {tab === 'despesas' && (

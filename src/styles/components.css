@@ -293,7 +293,7 @@ body.discovery .app-bar { position: absolute; left: 0; right: 0; background: tra
 .skeleton { background: var(--color-neutral); border-radius: var(--radius-md); animation: shimmer 1.4s ease-in-out infinite; }
 @keyframes shimmer { 0%, 100% { opacity: 1; } 50% { opacity: .55; } }
 @media (prefers-reduced-motion: reduce) { .skeleton { animation: none; } .photo-card img { transition: none; } }
-.dialog { border: 0; padding: 0; border-radius: var(--radius-lg); box-shadow: var(--shadow-xl); width: min(520px, calc(100vw - 2 * var(--spacing-margin-mobile))); max-height: calc(100dvh - 2 * var(--spacing-md)); color: var(--color-on-surface); background: var(--color-surface); }
+.dialog { margin: auto; inset: 0; border: 0; padding: 0; border-radius: var(--radius-lg); box-shadow: var(--shadow-xl); width: min(520px, calc(100vw - 2 * var(--spacing-margin-mobile))); max-height: calc(100dvh - 2 * var(--spacing-md)); color: var(--color-on-surface); background: var(--color-surface); }
 .dialog::backdrop { background: var(--scrim); }
 .dialog-body { padding: var(--spacing-lg); display: grid; }
 .form { display: grid; gap: var(--spacing-md); }
@@ -341,3 +341,28 @@ body.discovery .app-bar { position: absolute; left: 0; right: 0; background: tra
 .activity.stay { grid-template-columns: 40px 1fr auto; }
 .button.login-link { height: 44px; }
 @media (max-width: 639px) { .bar-actions a.login-link { display: inline-flex !important; } }
+.world-map { margin: 0; display: grid; gap: var(--spacing-md); }
+.world-map svg { width: 100%; height: auto; display: block; }
+.world-map .country { fill: var(--color-neutral); stroke: var(--color-surface); stroke-width: 0.5; transition: fill .2s; }
+.world-map .country.planned { fill: var(--color-secondary); }
+.world-map .country.visited { fill: var(--color-primary); }
+.world-map .country:hover { fill: var(--color-primary-strong); }
+.world-map-legend { display: flex; flex-wrap: wrap; gap: var(--spacing-sm) var(--spacing-lg); color: var(--color-on-surface-variant); }
+.world-map-legend span { display: inline-flex; align-items: center; gap: var(--spacing-sm); }
+.swatch { width: 16px; height: 16px; border-radius: var(--radius-xs); display: inline-block; }
+.swatch.visited { background: var(--color-primary); }
+.swatch.planned { background: var(--color-secondary); }
+.swatch.none { background: var(--color-neutral); }
+.world-map-list { display: flex; flex-wrap: wrap; gap: var(--spacing-sm); }
+@media (prefers-reduced-motion: reduce) { .world-map .country { transition: none; } }
+.search-chip { position: absolute; top: calc(-1 * var(--spacing-sm-plus)); left: var(--spacing-xl); display: inline-flex; align-items: center; gap: var(--spacing-xs); padding: var(--spacing-xs) var(--spacing-sm-plus); border-radius: var(--radius-full); background: var(--color-primary-strong); color: var(--color-on-primary); box-shadow: var(--shadow-sm); }
+@media (max-width: 639px) { .search-chip { left: var(--spacing-md); } }
+.chips { display: flex; flex-wrap: wrap; gap: var(--spacing-sm); }
+.chips .chip { min-height: 36px; }
+.hero-cat-link { color: var(--color-on-tertiary); text-decoration: underline; text-underline-offset: 3px; }
+.trip-map { height: 420px; border-radius: var(--radius-md); z-index: 0; }
+.swatch.dest { background: var(--color-primary-strong); border-radius: var(--radius-full); }
+.swatch.act { background: var(--color-primary); border-radius: var(--radius-full); width: 12px; height: 12px; }
+.leaflet-tooltip { font-family: var(--font-body-sm), sans-serif; }
+@media (max-width: 639px) { .trip-map { height: 320px; } }
+.avatar-img { object-fit: cover; padding: 0; }

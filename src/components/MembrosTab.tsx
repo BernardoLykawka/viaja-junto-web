@@ -29,7 +29,7 @@ export function MembrosTab({ trip, meId }: { trip: Trip; meId: number | undefine
               const canManage = isOwner && m.role !== 'OWNER' && m.user.id !== meId;
               return (
                 <li key={m.id}>
-                  <Avatar name={m.user.name} />
+                  <Avatar name={m.user.name} src={m.user.avatarUrl} />
                   <div className="grow">
                     <p className="type-title-md">{m.user.name}{m.user.id === meId ? ' (você)' : ''}</p>
                     <p className="type-body-sm muted">{m.user.email}</p>

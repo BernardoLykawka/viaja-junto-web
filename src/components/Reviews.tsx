@@ -1,9 +1,10 @@
 import { useState, type FormEvent } from 'react';
 import { ChatCircleText, Star } from '@phosphor-icons/react';
-import type { UseMutationResult, UseQueryResult } from '@tanstack/react-query';
+import type { UseMutationResult } from '@tanstack/react-query';
+import type { Paged } from '../lib/queries';
 import { errorMessage, fieldErrors } from '../lib/api';
-import type { Page, Review } from '../lib/types';
-import { Alert, Avatar, Button, EmptyState, Field, Skeleton } from './ui';
+import type { Review } from '../lib/types';
+import { Alert, Avatar, Button, EmptyState, Field, LoadMore, Skeleton } from './ui';
 
 export function Stars({ value }: { value: number }) {
   return (
@@ -13,15 +14,16 @@ export function Stars({ value }: { value: number }) {
   );
 }
 
-export function ReviewList({ query, emptyText }: { query: UseQueryResult<Page<Review>>; emptyText: string }) {
+export function ReviewList({ query, emptyText }: { query: Paged<Review>; emptyText: string }) {
   if (query.isLoading) return <Skeleton style={{ height: 120 }} />;
   if (query.error) return <Alert kind="error">{errorMessage(query.error)}</Alert>;
-  if (!query.data?.data.length) return <EmptyState icon={ChatCircleText} text={emptyText} />;
+  if (!query.items.length) return <EmptyState icon={ChatCircleText} text={emptyText} />;
   return (
+    <>
     <ul className="list">
-      {query.data.data.map((r) => (
+      {query.items.map((r) => (
         <li key={r.id} style={{ alignItems: 'flex-start' }}>
-          <Avatar name={r.author.name} />
+          <Avatar name={r.author.name} src={r.author.avatarUrl} />
           <div className="grow stack-sm">
             <div style={{ display: 'flex', justifyContent: 'space-between', gap: 'var(--spacing-sm)', flexWrap: 'wrap' }}>
               <p className="type-title-md">{r.author.name}</p>
@@ -33,6 +35,8 @@ export function ReviewList({ query, emptyText }: { query: UseQueryResult<Page<Re
         </li>
       ))}
     </ul>
+    <LoadMore hasMore={!!query.hasNextPage} loading={query.isFetchingNextPage} onClick={() => void query.fetchNextPage()} label="Ver mais avaliações" />
+    </>
   );
 }
 

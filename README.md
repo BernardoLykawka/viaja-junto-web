@@ -9,6 +9,7 @@ cd frontend
 npm install
 cp .env.example .env.local   # preencha VITE_FIREBASE_*
 npm run dev                  # http://localhost:5173
+npm test                     # Vitest (lógica, adaptadores e rotas/login)
 ```
 
 A API precisa estar no ar (perfil `dev`, porta 8080): o CORS do perfil `dev` já libera `http://localhost:5173`.
@@ -41,19 +42,29 @@ Cada destino tem atividades: passeios (Cristo Redentor), cultura, gastronomia, t
 `duracaoMinutos` guarda as noites (noites × 1440) e `custoPrevisto` é o total da estadia. Os tipos seguem os do backend
 (`Passeio`, `Cultura`, `Gastronomia`, `Hospedagem`, `Transporte`) e ficam em `src/lib/activityTypes.ts`.
 
+## Regras do frontend
+
+- **Só avalia quem foi:** destino ou atividade só pode ser avaliado por quem tem uma viagem *Concluída* com ele no
+  roteiro (`src/lib/travelHistory.ts`). O backend ainda não aplica essa regra.
+- **Países visitados** vêm das viagens concluídas. `GET /places/visited-countries` conta também viagens planejadas,
+  por isso o painel não usa essa rota.
+
 ## Estado atual
 
 | Tela | Rotas da API | Situação |
 | --- | --- | --- |
 | Login (Google) | Firebase | pronto |
-| Painel "Minhas viagens" | `GET /trips`, `/places/featured`, `/places/visited-countries`, `/trips/{id}/destinations` | pronto, sem sino (a API não tem notificações) |
+| Início (`/`, pela logo, público) | `GET /trips`, `/places/featured`, `/places/visited-countries`, `/trips/{id}/destinations` | pronto, sem sino (a API não tem notificações) |
 | Detalhe da viagem | `GET`/`PUT`/`DELETE /trips/{id}` | pronto, com edição de nome, datas, descrição e situação |
 | Roteiro | destinos (`GET`/`POST`/`DELETE`), atividades (`GET`/`POST`/`DELETE`), `/activities/catalog` | pronto: por destino, hospedagem (check-in + noites) e atividades por dia |
 | Orçamento | `GET`/`PUT /trips/{id}/budget` | pronto |
 | Membros | `GET`/`PATCH`/`DELETE /trips/{id}/members` | pronto |
 | Convite por link | `POST /trips/{id}/members/join` | pronto: `/convite/{id}?codigo=...` |
+| Minhas viagens (`/viagens`) | `GET /trips`, destinos de cada viagem | pronto: lista com filtro por situação, "Nova viagem" e mapa de viagens |
 | Descobrir e destino (público) | `GET /places`, `/places/{id}`, `GET`/`POST /places/{id}/reviews`, `/activities/catalog?q={cidade}` | pronto: "O que fazer" e "Onde ficar" |
 | Atividade do catálogo (público) | `/activities/catalog/{id}`, `GET`/`POST /places/{id}/activities/{id}/reviews` | pronto, com "Adicionar à viagem" |
 | Perfil | `GET`/`PATCH /users/me` | pronto |
+| Mapa-múndi (painel) | destinos de todas as viagens | pronto: país de viagem concluída pintado; de viagem futura em tom claro |
 | Despesas | — | aviso "em breve" (a API não tem `/expenses`, `/balances`, `/settlements`) |
-| Mapa da viagem | `GET /trips/{id}/map` | pendente |
+| Mapa da viagem (aba Mapa) | `GET /trips/{id}/map` | pronto: Leaflet + OpenStreetMap; precisa da chave do Google Places na API |
+| Entrar com código | `POST /trips/{id}/members/join` | pronto: aceita o link ou só o código |

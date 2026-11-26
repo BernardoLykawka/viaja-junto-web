@@ -48,6 +48,7 @@ export interface TripDestination {
   catalogId: number | null;
   name: string;
   country: string | null;
+  isoCode: string | null;
   photoUrl: string | null;
   arrivalDate: string | null;
   departureDate: string | null;
@@ -85,6 +86,8 @@ export interface Budget {
 export interface Page<T> {
   data: T[];
   totalItems: number;
+  /** Há mais páginas depois desta. */
+  hasMore: boolean;
 }
 
 export interface Review {
@@ -107,4 +110,12 @@ export interface CatalogActivity {
   averagePrice: number | null;
   averageRating: number | null;
   reviewCount: number;
+}
+
+export interface MapMarker {
+  type: 'destination' | 'activity';
+  id: string;
+  label: string;
+  lat: number;
+  lng: number;
 }

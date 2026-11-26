@@ -46,6 +46,7 @@ export const toDestination = (r: Raw): TripDestination => ({
   catalogId: r.destinoCatalogoId ?? null,
   name: r.nome,
   country: r.pais ?? null,
+  isoCode: r.codigoPaisIso ?? null,
   photoUrl: r.fotoUrl ?? null,
   arrivalDate: r.dataChegada ?? null,
   departureDate: r.dataSaida ?? null,
@@ -99,5 +100,7 @@ export const toCatalogActivity = (r: Raw): CatalogActivity => ({
 /** Aceita lista simples, o envelope `{data, meta}` do contrato e o `Page` do Spring (`content`, `totalElements`). */
 export function toPage<T>(r: Raw, map: (x: Raw) => T): Page<T> {
   const items: Raw[] = Array.isArray(r) ? r : (r?.data ?? r?.content ?? []);
-  return { data: items.map(map), totalItems: r?.meta?.totalItems ?? r?.totalElements ?? items.length };
+  // Envelope do contrato: meta.page (1-based) e meta.totalPages. Page do Spring: last.
+  const hasMore = r?.meta ? r.meta.page < r.meta.totalPages : r?.last === false;
+  return { data: items.map(map), totalItems: r?.meta?.totalItems ?? r?.totalElements ?? items.length, hasMore: !!hasMore };
 }

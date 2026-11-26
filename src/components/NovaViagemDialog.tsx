@@ -3,11 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { errorMessage, fieldErrors } from '../lib/api';
 import { useCreateTrip } from '../lib/queries';
 import { Alert, Button, Dialog, Field } from './ui';
+import type { Place } from '../lib/types';
 
 export interface TripDraft {
   name?: string;
   start?: string;
   end?: string;
+  /** Destino do catálogo escolhido na busca: entra no roteiro assim que a viagem é criada. */
+  place?: Place;
 }
 
 export function NovaViagemDialog({ open, onClose, draft }: { open: boolean; onClose: () => void; draft?: TripDraft }) {
@@ -36,7 +39,10 @@ export function NovaViagemDialog({ open, onClose, draft }: { open: boolean; onCl
     e.preventDefault();
     if (dateOrder) return;
     create.mutate(
-      { nome: name.trim(), dataInicio: start || null, dataFim: end || null, orcamentoTotal: budget ? Number(budget) : null },
+      {
+        trip: { nome: name.trim(), dataInicio: start || null, dataFim: end || null, orcamentoTotal: budget ? Number(budget) : null },
+        place: draft?.place ? { destinoCatalogoId: draft.place.id, nome: draft.place.name, dataChegada: start || null, dataSaida: end || null } : undefined,
+      },
       {
         onSuccess: (trip) => {
           onClose();
@@ -64,6 +70,7 @@ export function NovaViagemDialog({ open, onClose, draft }: { open: boolean; onCl
         <Field label="Orçamento total (R$)" htmlFor="nv-orc" helper="Opcional. Você pode ajustar depois na aba Orçamento." error={errs.orcamentoTotal}>
           <input id="nv-orc" type="number" inputMode="decimal" min={0} step="0.01" value={budget} onChange={(e) => setBudget(e.target.value)} />
         </Field>
+        {draft?.place && <Alert kind="info">{draft.place.name} já entra no roteiro como primeiro destino.</Alert>}
         <div className="form-actions">
           <Button variant="secondary" onClick={onClose}>Cancelar</Button>
           <Button type="submit" busy={create.isPending} disabled={name.trim().length < 2}>Criar viagem</Button>

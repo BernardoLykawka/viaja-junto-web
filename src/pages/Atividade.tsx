@@ -1,30 +1,39 @@
 import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { ArrowLeft, MapPin, Plus, Star } from '@phosphor-icons/react';
-import { categoryIcon, isLodging, normalizeType } from '../lib/activityTypes';
+import { categoryIcon, isLodging, normalizeType, sameCity } from '../lib/activityTypes';
 import { ApiError, errorMessage } from '../lib/api';
 import { price, rating } from '../lib/format';
-import { useActivityReviews, useCatalogActivity, useCreateActivityReview, useMe, usePlace } from '../lib/queries';
+import { useActivityReviewsPaged, useCatalogActivity, useCreateActivityReview, useMe, usePlaces } from '../lib/queries';
 import { Alert, Button, Skeleton } from '../components/ui';
 import { ReviewForm, ReviewList } from '../components/Reviews';
 import { AddToTripDialog } from '../components/AddToTripDialog';
 import { LoginToAct } from '../components/LoginToAct';
+import { ReviewGate } from '../components/ReviewGate';
+import { useTravelHistory } from '../lib/travelHistory';
 import { useAuth } from '../lib/auth';
 
 /** Atividade do catálogo dentro de um destino: um passeio (Cristo Redentor) ou uma hospedagem (hotel). */
 export function Atividade() {
   const { id, activityId } = useParams();
-  const placeId = Number(id);
   const actId = Number(activityId);
-  const place = usePlace(placeId);
   const activity = useCatalogActivity(actId);
-  const reviews = useActivityReviews(placeId, actId);
+  const places = usePlaces('');
+  // A atividade pertence a uma cidade; o destino do catálogo vem do caminho ou é achado pela cidade.
+  const place = id
+    ? places.data?.data.find((p) => p.id === Number(id))
+    : places.data?.data.find((p) => sameCity(p.city, activity.data?.city) || sameCity(p.name, activity.data?.city));
+  const placeId = place?.id ?? 0; // a API não usa o destino do caminho nas avaliações de atividade
+  const reviews = useActivityReviewsPaged(placeId, actId);
   const createReview = useCreateActivityReview(placeId, actId);
   const me = useMe();
+  const history = useTravelHistory();
   const [adding, setAdding] = useState(false);
   const { status } = useAuth();
 
-  const back = <Link to={`/destinos/${placeId}`} className="back type-label-md"><ArrowLeft size={20} aria-hidden /> {place.data?.name ?? 'Destino'}</Link>;
+  const back = place
+    ? <Link to={`/destinos/${place.id}`} className="back type-label-md"><ArrowLeft size={20} aria-hidden /> {place.name}</Link>
+    : <Link to="/descobrir?aba=atividades" className="back type-label-md"><ArrowLeft size={20} aria-hidden /> Descobrir</Link>;
 
   if (activity.isLoading) return <div className="container page-work">{back}<Skeleton style={{ height: 320, borderRadius: 'var(--radius-xl)' }} /></div>;
   if (activity.error || !activity.data) {
@@ -39,7 +48,7 @@ export function Atividade() {
   const a = activity.data;
   const lodging = isLodging(a.type);
   const I = categoryIcon(a.type);
-  const myReview = reviews.data?.data.find((r) => r.author.id === me.data?.id);
+  const myReview = reviews.items.find((r) => r.author.id === me.data?.id);
 
   return (
     <div className="container page-work">
@@ -75,19 +84,21 @@ export function Atividade() {
           <section className="card stack-sm">
             <span className="type-label-sm muted">{lodging ? 'Preço médio por noite' : 'Preço médio'}</span>
             <span className="type-numeric-lg">{price(a.averagePrice) ?? 'Sem preço'}</span>
-            {place.data && status === 'authed' && (
+            {place && status === 'authed' && (
               <Button icon={Plus} onClick={() => setAdding(true)} style={{ marginTop: 'var(--spacing-sm)' }}>
                 {lodging ? 'Reservar na viagem' : 'Adicionar à viagem'}
               </Button>
             )}
           </section>
           <LoginToAct text={lodging ? 'Entre para colocar esta hospedagem numa viagem ou avaliá-la.' : 'Entre para colocar esta atividade numa viagem ou avaliá-la.'}>
-            <ReviewForm create={createReview} what={lodging ? 'esta hospedagem' : 'esta atividade'} myRating={myReview?.rating} />
+            <ReviewGate allowed={!!myReview || history.visitedActivityIds.has(a.id)} loading={history.loading} what={lodging ? 'esta hospedagem' : 'esta atividade'}>
+              <ReviewForm create={createReview} what={lodging ? 'esta hospedagem' : 'esta atividade'} myRating={myReview?.rating} />
+            </ReviewGate>
           </LoginToAct>
         </div>
       </div>
 
-      {place.data && <AddToTripDialog open={adding} onClose={() => setAdding(false)} place={place.data} activity={a} />}
+      {place && <AddToTripDialog open={adding} onClose={() => setAdding(false)} place={place} activity={a} />}
     </div>
   );
 }

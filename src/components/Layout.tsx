@@ -1,6 +1,7 @@
-import { useEffect, useRef } from 'react';
+import { Suspense, useEffect, useRef } from 'react';
+import { ErrorBoundary } from './ErrorBoundary';
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
-import { AirplaneTilt, Compass, GlobeHemisphereWest, SignOut, UserCircle } from '@phosphor-icons/react';
+import { AirplaneTilt, Compass, GlobeHemisphereWest, UserCircle } from '@phosphor-icons/react';
 import { useAuth } from '../lib/auth';
 import { useMe } from '../lib/queries';
 import { Avatar } from './ui';
@@ -29,10 +30,10 @@ function ClipPaths() {
 
 export function Layout() {
   const { pathname } = useLocation();
-  const { signOut, status } = useAuth();
+  const { status } = useAuth();
   const { data: me } = useMe();
   const main = useRef<HTMLElement>(null);
-  const discovery = pathname === '/viagens';
+  const discovery = pathname === '/';
 
   useEffect(() => {
     document.body.classList.toggle('discovery', discovery);
@@ -52,7 +53,7 @@ export function Layout() {
       </a>
       <header className="app-bar">
         <div className="container">
-          <Link className="brand" to="/viagens">
+          <Link className="brand" to="/" aria-label="ViajaJunto, ir para o início">
             <span className="brand-mark">
               <Compass weight="fill" size={24} aria-hidden />
             </span>
@@ -63,7 +64,7 @@ export function Layout() {
           </Link>
           <nav className="top-nav" aria-label="Principal">
             {NAV.map((n) => (
-              <NavLink key={n.to} to={n.to} className="nav-item type-label-lg" end>
+              <NavLink key={n.to} to={n.to} className="nav-item type-label-lg">
                 {n.label}
               </NavLink>
             ))}
@@ -73,21 +74,22 @@ export function Layout() {
               <Link to="/entrar" state={{ from: pathname }} className="button button-secondary type-label-md login-link">Entrar</Link>
             ) : (<>
             <Link to="/perfil" aria-label={me ? `Perfil de ${me.name}` : 'Perfil'} style={{ display: 'inline-flex' }}>
-              {me ? <Avatar name={me.name} /> : <UserCircle size={40} aria-hidden />}
+              {me ? <Avatar name={me.name} src={me.avatarUrl} /> : <UserCircle size={40} aria-hidden />}
             </Link>
-            <button type="button" className="icon-button button-circle top-signout" aria-label="Sair" onClick={() => void signOut()}>
-              <SignOut size={24} aria-hidden />
-            </button>
             </>)}
           </div>
         </div>
       </header>
       <ClipPaths />
       <main id="conteudo" ref={main} tabIndex={-1} style={{ paddingBottom: 'var(--spacing-4xl)' }} className="app-main">
-        <Outlet />
+        <ErrorBoundary key={pathname}>
+          <Suspense fallback={<p className="type-body-md muted container page-work" role="status">Carregando…</p>}>
+            <Outlet />
+          </Suspense>
+        </ErrorBoundary>
       </main>
       <nav className="bottom-nav type-label-sm" aria-label="Principal (celular)">
-        <NavLink to="/viagens" end>
+        <NavLink to="/viagens">
           <AirplaneTilt size={24} aria-hidden />
           Viagens
         </NavLink>
